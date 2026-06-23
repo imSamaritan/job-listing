@@ -1,7 +1,9 @@
 {
     "require": {
         "slim/slim": "4.*",
-        "slim/psr7": "^1.8"
+        "slim/psr7": "^1.8",
+        "slim/php-view": "^3.4",
+        "php-di/php-di": "^7.1"
     },
     "autoload": {
         "psr-4": {
