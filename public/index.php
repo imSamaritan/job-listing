@@ -18,6 +18,10 @@ AppFactory::setContainer($container);
 
 $app = AppFactory::create();
 
+$errorMiddlerware = $app->addErrorMiddleware(true, true, true);
+$handler = $errorMiddlerware->getDefaultErrorHandler();
+$handler->forceContentType("application/json");
+
 $app->get("/", Home::class);
 
 $app->run();
