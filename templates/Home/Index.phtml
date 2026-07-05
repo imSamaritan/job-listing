@@ -3,8 +3,14 @@
  * @var string $count
  */
 ?>
+<script src="/js/home.js"></script>
+
+<div x-data="counter" class="has-text-dark has-text-centered mt-5">
+    <p>Counter is : <span x-text="count"></span></p>
+    <button type="button" @click="increment" class="button">Add One</button>
+</div>
 
 <h1 class="title has-text-dark has-text-centered mt-5">
-    Home Component!!! 
-    (<?php echo htmlentities($count) ?>)
+    Home Component!!!
+    (<?php echo htmlentities($count); ?>)
 </h1>
