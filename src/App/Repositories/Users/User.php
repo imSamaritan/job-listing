@@ -19,8 +19,12 @@ class User extends Repository implements UserRepositoryInterface
     {
         $table = $this->getTable();
         $databaseConnection = $this->database->connect();
+        
+        $allowedSelectedFields = Helper::USER_PAYLOAD_SELECTED_FIELDS;
+        $fields = array_keys(array_flip($allowedSelectedFields));
+        $fields = implode(', ', $fields);
 
-        $sql = "SELECT user_id, user_role, pending_account FROM {$table} WHERE user_id = ?;";
+        $sql = "SELECT {$fields} FROM {$table} WHERE user_id = ?;";
         $statement = $databaseConnection->prepare($sql);
 
         if ($statement->execute([$id])) {
@@ -37,9 +41,9 @@ class User extends Repository implements UserRepositoryInterface
         $allowedFields = Helper::ALLOWED_FIELDS;
 
         if ($user["user_role"] === "admin") {
-            $user["pending_account"] = true;
+            $user["pending_status"] = true;
         } else {
-            $user["pending_account"] = null;
+            $user["pending_status"] = null;
         }
 
         $user = array_intersect_key($user, array_flip($allowedFields));
