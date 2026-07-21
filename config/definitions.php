@@ -8,7 +8,7 @@ use Slim\Views\PhpRenderer;
 use Dotenv\Dotenv;
 use App\Database;
 use App\Interfaces\UserRepositoryInterface;
-use App\Repositories\Users\User;
+use App\Repositories\Users\UserRepository;
 
 $dotenv = Dotenv::createImmutable(ROOT_PATH);
 $dotenv->safeLoad();
@@ -27,5 +27,5 @@ return [
             database: $_ENV["DB_NAME"],
         );
     },
-    UserRepositoryInterface::class => DI\get(User::class),
+    UserRepositoryInterface::class => DI\get(UserRepository::class),
 ];

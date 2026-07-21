@@ -4,28 +4,23 @@ declare(strict_types=1);
 
 namespace App\Repositories\Users;
 
-use App\Database;
-use App\Repositories\Repository;
+use App\Repositories\BaseRepository;
 use App\Interfaces\UserRepositoryInterface;
 use App\Helper\Helper;
 
-class User extends Repository implements UserRepositoryInterface
+class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
-    public function __construct(private Database $database)
-    {
-    }
-
+    protected ?string $table = "users";
     public function getUser(int $id): array|bool
     {
-        $table = $this->getTable();
-        $databaseConnection = $this->database->connect();
-        
-        $allowedSelectedFields = Helper::USER_PAYLOAD_SELECTED_FIELDS;
-        $fields = array_keys(array_flip($allowedSelectedFields));
-        $fields = implode(', ', $fields);
+        $connection = $this->databaseConnection();
 
-        $sql = "SELECT {$fields} FROM {$table} WHERE user_id = ?;";
-        $statement = $databaseConnection->prepare($sql);
+        $allowedSelectedFields = Helper::USER_SELECTED_FIELDS;
+        $fields = array_keys(array_flip($allowedSelectedFields));
+        $fields = implode(", ", $fields);
+
+        $sql = "SELECT {$fields} FROM {$this->table} WHERE user_id = ?;";
+        $statement = $connection->prepare($sql);
 
         if ($statement->execute([$id])) {
             return $statement->fetch();
@@ -36,8 +31,7 @@ class User extends Repository implements UserRepositoryInterface
 
     public function create(array $user): array|false
     {
-        $table = $this->getTable();
-        $databaseConnection = $this->database->connect();
+        $connection = $this->databaseConnection();
         $allowedFields = Helper::ALLOWED_FIELDS;
 
         if ($user["user_role"] === "admin") {
@@ -53,16 +47,16 @@ class User extends Repository implements UserRepositoryInterface
         $fieldsPlaceholders = array_map(fn($field) => ":{$field}", $fields);
         $placeholders = implode(",", $fieldsPlaceholders);
 
-        $sql = "INSERT INTO {$table} ({$columns}) VALUES({$placeholders})";
+        $sql = "INSERT INTO {$this->table} ({$columns}) VALUES({$placeholders})";
 
-        $statement = $databaseConnection->prepare($sql);
+        $statement = $connection->prepare($sql);
         $createUser = $statement->execute($user);
 
         if (!$createUser) {
             return false;
         }
 
-        $user_id = (int) $databaseConnection->lastInsertId("user_id");
+        $user_id = (int) $connection->lastInsertId("user_id");
         return $this->getUser($user_id);
     }
 }
