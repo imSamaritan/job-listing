@@ -23,4 +23,54 @@ class Helper
         "user_location",
         "pending_status",
     ];
+
+    public const USER_VALIDATION_SCHEMA = [
+        [
+            "id" => "password",
+            "code" => 400,
+            "fields" => ["user_password", "user_confirm_password"],
+            "message" => "Password fields does not match!",
+        ],
+        [
+            "rule" => "[a-zA-Z]{5,10}",
+            "code" => 400,
+            "asset" => [
+                "field" => "user_name",
+                "message" => "Invalid username",
+            ],
+        ],
+        [
+            "rule" => "[a-z0-9-]+\@[a-z]{3,}\.[a-z]{2,}\.*[a-z]{0,}",
+            "code" => 400,
+            "asset" => [
+                "field" => "user_email",
+                "message" => "Invalid email address",
+            ],
+        ],
+        [
+            "rule" => "[a-zA-Z0-9\#\@]{5,15}",
+            "code" => 400,
+            "asset" => [
+                "field" => "user_password",
+                "message" =>
+                    "Password required, it must 5-15 characters with a number, @ or # characters",
+            ],
+        ],
+        [
+            "rule" => "[admin|applicant]+",
+            "code" => 400,
+            "asset" => [
+                "field" => "user_role",
+                "message" => "Invalid role",
+            ],
+        ],
+        [
+            "rule" => "[a-zA-Z\s]{5,30}",
+            "code" => 400,
+            "asset" => [
+                "field" => "user_location",
+                "message" => "Location name is required!",
+            ],
+        ],
+    ];
 }
