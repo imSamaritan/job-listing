@@ -26,6 +26,13 @@ class Helper
 
     public const USER_VALIDATION_SCHEMA = [
         [
+            "id" => "email",
+            "table" => "users",
+            "code" => 400,
+            "fields" => ["user_email"],
+            "message" => "Email address already taken!",
+        ],
+        [
             "id" => "password",
             "code" => 400,
             "fields" => ["user_password", "user_confirm_password"],

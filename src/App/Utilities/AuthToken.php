@@ -29,7 +29,7 @@ class AuthToken
     {
         if (
             empty($authHeader) ||
-            !preg_match("/Bearer\s(.+)/", $authHeader, $matches)
+            !preg_match("#Bearer\s+(\S+)#i", $authHeader, $matches)
         ) {
             return null;
         }

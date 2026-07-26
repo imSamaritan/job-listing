@@ -20,16 +20,18 @@ class Users
     {
         $userData = $request->getAttribute("userData");
         $authHeader = $request->getHeaderLine("Authorization");
+        $token = null;
         //...Validate data
         //...If user_role === "admin"
         //...Append pending_account field =>  true Else field => null
         // ...Then call create
         //...
         $payload = $this->userRepository->create($userData);
-        //echo $payload["user_id"];
-        // echo AuthToken::generateToken($payload);
-        // print_r(AuthToken::verifyToken($authHeader));
-        $response->getBody()->write(json_encode($payload));
+        if ($payload) {
+            $token = AuthToken::generateToken($payload);
+        }
+        // $authenticatedUser = AuthToken::verifyToken($authHeader);
+        $response->getBody()->write(json_encode(["token" => $token]));
         // $response->getBody()->write(json_encode($payload));
         return $response;
     }

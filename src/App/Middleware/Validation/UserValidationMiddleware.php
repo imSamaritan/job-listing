@@ -9,12 +9,45 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use App\Helper\Helper;
+use App\Database;
 
 class UserValidationMiddleware
 {
     private array $errors = [];
-    public function __construct(private ResponseFactory $responseFactory)
+    public function __construct(
+        private ResponseFactory $responseFactory,
+        private Database $database,
+    ) {
+    }
+
+    private function idFieldsValidator(array $schema, array $data): void
     {
+        $fields = $schema["fields"];
+        if ($schema["id"] === "password") {
+            $password = strtolower($data[$fields[0]]);
+            $confirmPassword = strtolower($data[$fields[1]]);
+            if ($password != $confirmPassword) {
+                $this->errors[] = [
+                    "field" => $fields[1],
+                    "code" => $schema["code"],
+                    "message" => $schema["message"],
+                ];
+            }
+        }
+
+        if ($schema["id"] === "email") {
+            $databaseConnection = $this->database->connect();
+            $sql = "SELECT * FROM {$schema["table"]} WHERE $fields[0] = ?";
+            $statement = $databaseConnection->prepare($sql);
+            $statement->execute([$data[$fields[0]]]);
+            if ($statement->rowCount() > 1) {
+                $this->errors[] = [
+                    "field" => $fields[0],
+                    "code" => $schema["code"],
+                    "message" => $schema["message"],
+                ];
+            }
+        }
     }
 
     private function validate(array $schemas, array $data): array
@@ -22,16 +55,7 @@ class UserValidationMiddleware
         //schema ['identity', ['field', 'message']]
         foreach ($schemas as $schema) {
             if (isset($schema["id"])) {
-                if ($schema["id"] === "password") {
-                    $fields = $schema["fields"];
-                    if (strtolower($data[$fields[0]]) != strtolower($data[$fields[1]])) {
-                        $this->errors[] = [
-                            "field" => $fields[1],
-                            "code" => $schema["code"],
-                            "message" => $schema["message"],
-                        ];
-                    }
-                }
+                $this->idFieldsValidator($schema, $data);
                 continue;
             }
 
