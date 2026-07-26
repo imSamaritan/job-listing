@@ -29,13 +29,6 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         return false;
     }
 
-    private function getPayload(int $id): array
-    {
-      $user = $this->getUser($id);
-      $selectedPayloadFields = array_flip(["user_id", "user_role", "pending_status"]);
-      return array_intersect_key($user, $selectedPayloadFields);
-    }
-
     public function create(array $user): array|false
     {
         $connection = $this->databaseConnection();
@@ -65,5 +58,16 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
         $user_id = (int) $connection->lastInsertId("user_id");
         return $this->getPayload($user_id);
+    }
+
+    private function getPayload(int $id): array
+    {
+        $user = $this->getUser($id);
+        $selectedPayloadFields = array_flip([
+            "user_id",
+            "user_role",
+            "pending_status",
+        ]);
+        return array_intersect_key($user, $selectedPayloadFields);
     }
 }
