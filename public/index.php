@@ -5,8 +5,8 @@ declare(strict_types=1);
 use Slim\Factory\AppFactory;
 use DI\ContainerBuilder;
 use App\Middleware\JsonResponseHeaderMiddleware;
-use App\Controllers\Home;
-use App\Controllers\Users;
+use App\Controllers\HomeController;
+use App\Controllers\UsersController;
 use App\Middleware\Validation\UserValidationMiddleware;
 
 require_once dirname(__DIR__) . "/helper/constant-variables-helper.php";
@@ -27,9 +27,9 @@ $handler->forceContentType("application/json");
 
 $app->addBodyParsingMiddleware();
 
-$app->get("/", Home::class);
+$app->get("/", HomeController::class);
 $app
-    ->post("/api/users", Users::class . ":createUser")
+    ->post("/api/users", UsersController::class . ":createUser")
     ->add(UserValidationMiddleware::class)
     ->add(JsonResponseHeaderMiddleware::class);
 

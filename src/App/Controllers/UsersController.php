@@ -9,7 +9,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use App\Interfaces\CreateUserRepositoryInterface;
 use App\Utilities\AuthToken;
 
-class Users
+class UsersController
 {
     public function __construct(
         private CreateUserRepositoryInterface $userRepository,

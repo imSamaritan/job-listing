@@ -9,7 +9,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Views\PhpRenderer;
 use App\Database;
 
-class Home
+class HomeController
 {
     public function __construct(private PhpRenderer $renderer, private Database $database)
     {
