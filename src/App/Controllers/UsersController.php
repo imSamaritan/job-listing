@@ -7,7 +7,6 @@ namespace App\Controllers;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use App\Interfaces\CreateUserRepositoryInterface;
-use App\Utilities\AuthToken;
 
 class UsersController
 {
@@ -19,20 +18,8 @@ class UsersController
     public function createUser(Request $request, Response $response): Response
     {
         $userData = $request->getAttribute("userData");
-        $authHeader = $request->getHeaderLine("Authorization");
-        $token = null;
-        //...Validate data
-        //...If user_role === "admin"
-        //...Append pending_account field =>  true Else field => null
-        // ...Then call create
-        //...
         $payload = $this->userRepository->create($userData);
-        if ($payload) {
-            $token = AuthToken::generateToken($payload);
-        }
-        // $authenticatedUser = AuthToken::verifyToken($authHeader);
-        $response->getBody()->write(json_encode(["token" => $token]));
-        // $response->getBody()->write(json_encode($payload));
+        $response->getBody()->write(json_encode($payload));
         return $response;
     }
 }
