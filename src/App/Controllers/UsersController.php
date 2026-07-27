@@ -6,12 +6,12 @@ namespace App\Controllers;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use App\Interfaces\CreateUserRepositoryInterface;
+use App\Interfaces\UserRepositoryInterface;
 
 class UsersController
 {
     public function __construct(
-        private CreateUserRepositoryInterface $userRepository,
+        private UserRepositoryInterface $userRepository,
     ) {
     }
 

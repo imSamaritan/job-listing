@@ -7,7 +7,7 @@ require_once dirname(__DIR__) . "/helper/constant-variables-helper.php";
 use Slim\Views\PhpRenderer;
 use Dotenv\Dotenv;
 use App\Database;
-use App\Interfaces\CreateUserRepositoryInterface;
+use App\Interfaces\UserRepositoryInterface;
 use App\Repositories\Users\UserRepository;
 
 $dotenv = Dotenv::createImmutable(ROOT_PATH);
@@ -27,5 +27,5 @@ return [
             database: $_ENV["DB_NAME"],
         );
     },
-    CreateUserRepositoryInterface::class => DI\get(UserRepository::class),
+    UserRepositoryInterface::class => DI\get(UserRepository::class),
 ];

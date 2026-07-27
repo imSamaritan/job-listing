@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Interfaces;
 
-interface CreateUserRepositoryInterface
+interface UserRepositoryInterface
 {
     public function create(array $user): array|bool;
-    public function getUser(int $id): array|bool;
+    public function get(int $id): array|bool;
 }
