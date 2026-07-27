@@ -6,13 +6,13 @@ namespace App\Controllers;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use App\Interfaces\UserRepositoryInterface;
+use App\Interfaces\CreateUserRepositoryInterface;
 use App\Utilities\AuthToken;
 
 class Users
 {
     public function __construct(
-        private UserRepositoryInterface $userRepository,
+        private CreateUserRepositoryInterface $userRepository,
     ) {
     }
 

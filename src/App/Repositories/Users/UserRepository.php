@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Repositories\Users;
 
 use App\Repositories\BaseRepository;
-use App\Interfaces\UserRepositoryInterface;
+use App\Interfaces\CreateUserRepositoryInterface;
 use App\Helper\Helper;
 
-class UserRepository extends BaseRepository implements UserRepositoryInterface
+class UserRepository extends BaseRepository implements CreateUserRepositoryInterface
 {
     protected ?string $table = "users";
     public function getUser(int $id): array|bool
