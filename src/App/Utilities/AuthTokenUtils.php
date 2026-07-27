@@ -8,7 +8,7 @@ use Exception;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
-class AuthToken
+class AuthTokenUtils
 {
     private static string $secretKey = "w5Hg/QiVMCHj/CvPo8NB1bdZ1G18Ovr0G30hXS+TwCg=";
     private static string $algorithm = "HS256";
