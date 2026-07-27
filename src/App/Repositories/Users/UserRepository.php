@@ -5,17 +5,18 @@ declare(strict_types=1);
 namespace App\Repositories\Users;
 
 use App\Repositories\BaseRepository;
-use App\Interfaces\CreateUserRepositoryInterface;
+use App\Interfaces\UserRepositoryInterface;
 use App\Helper\Helper;
 
-class UserRepository extends BaseRepository implements CreateUserRepositoryInterface
+class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
     protected ?string $table = "users";
-    public function getUser(int $id): array|bool
+    
+    public function get(int $id): array|bool
     {
         $connection = $this->databaseConnection();
 
-        $allowedSelectedFields = Helper::USER_SELECTED_FIELDS;
+        $allowedSelectedFields = Helper::GET_USER_SELECTED_FIELDS;
         $fields = array_keys(array_flip($allowedSelectedFields));
         $fields = implode(", ", $fields);
 
@@ -32,7 +33,7 @@ class UserRepository extends BaseRepository implements CreateUserRepositoryInter
     public function create(array $user): array|false
     {
         $connection = $this->databaseConnection();
-        $allowedFields = Helper::ALLOWED_FIELDS;
+        $allowedFields = Helper::INSERT_USER_ALLOWED_FIELDS;
 
         if ($user["user_role"] === "admin") {
             $user["pending_status"] = true;
@@ -62,12 +63,8 @@ class UserRepository extends BaseRepository implements CreateUserRepositoryInter
 
     private function getPayload(int $id): array
     {
-        $user = $this->getUser($id);
-        $selectedPayloadFields = array_flip([
-            "user_id",
-            "user_role",
-            "pending_status",
-        ]);
+        $user = $this->get($id);
+        $selectedPayloadFields = array_flip(Helper::USER_PAYLOAD_SELECTED_FIELDS);
         return array_intersect_key($user, $selectedPayloadFields);
     }
 }

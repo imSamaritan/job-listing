@@ -48,6 +48,7 @@ class UserValidationMiddleware
                 ];
             }
         }
+        
     }
 
     private function validate(array $schemas, array $data): array

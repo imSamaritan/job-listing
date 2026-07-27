@@ -6,7 +6,7 @@ namespace App\Helper;
 
 class Helper
 {
-    public const ALLOWED_FIELDS = [
+    public const INSERT_USER_ALLOWED_FIELDS = [
         "user_name",
         "user_email",
         "user_password",
@@ -15,13 +15,19 @@ class Helper
         "pending_status",
     ];
 
-    public const USER_SELECTED_FIELDS = [
+    public const GET_USER_SELECTED_FIELDS = [
         "user_id",
         "user_name",
         "user_email",
         "user_role",
         "user_location",
         "pending_status",
+    ];
+
+    public const USER_PAYLOAD_SELECTED_FIELDS = [
+        "user_id",
+        "user_role",
+        "pending_status"
     ];
 
     public const USER_VALIDATION_SCHEMA = [
@@ -64,7 +70,7 @@ class Helper
             ],
         ],
         [
-            "rule" => "[admin|applicant]+",
+            "rule" => "(admin|applicant)+",
             "code" => 400,
             "asset" => [
                 "field" => "user_role",
