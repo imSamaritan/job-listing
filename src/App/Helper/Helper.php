@@ -61,12 +61,12 @@ class Helper
             ],
         ],
         [
-            "rule" => "[a-zA-Z0-9\#\@]{5,15}",
+            "rule" => "(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{10,64}",
             "code" => 400,
             "asset" => [
                 "field" => "user_password",
                 "message" =>
-                    "Password required, it must 5-15 characters with a number, @ or # characters",
+                    "Password must contains atleast one uppercase letter, number and one of (@,$,!,#,%,*,?,&) characters.",
             ],
         ],
         [
