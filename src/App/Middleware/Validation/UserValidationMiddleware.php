@@ -40,7 +40,7 @@ class UserValidationMiddleware
             $sql = "SELECT * FROM {$schema["table"]} WHERE $fields[0] = ?";
             $statement = $databaseConnection->prepare($sql);
             $statement->execute([$data[$fields[0]]]);
-            if ($statement->rowCount() > 1) {
+            if ($statement->rowCount() > 0) {
                 $this->errors[] = [
                     "field" => $fields[0],
                     "code" => $schema["code"],
@@ -48,7 +48,6 @@ class UserValidationMiddleware
                 ];
             }
         }
-        
     }
 
     private function validate(array $schemas, array $data): array
@@ -81,6 +80,7 @@ class UserValidationMiddleware
     ): Response {
         $userData = $request->getParsedBody();
         $response = $this->responseFactory->createResponse();
+        $this->errors = [];
 
         $errors = $this->validate(Helper::USER_VALIDATION_SCHEMA, $userData);
         if (count($errors) > 0) {
