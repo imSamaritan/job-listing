@@ -28,8 +28,11 @@ $handler->forceContentType("application/json");
 $app->addBodyParsingMiddleware();
 
 $app->get("/", HomeController::class);
-$app
-    ->post("/api/users", UsersController::class . ":createUser")
+$app->post("/api/create", UsersController::class . ":create")
+    ->add(UserValidationMiddleware::class)
+    ->add(JsonResponseHeaderMiddleware::class);
+
+$app->post("/api/auth", UsersController::class . ":auth")
     ->add(UserValidationMiddleware::class)
     ->add(JsonResponseHeaderMiddleware::class);
 

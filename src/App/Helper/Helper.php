@@ -27,10 +27,10 @@ class Helper
     public const USER_PAYLOAD_SELECTED_FIELDS = [
         "user_id",
         "user_role",
-        "pending_status"
+        "pending_status",
     ];
 
-    public const USER_VALIDATION_SCHEMA = [
+    public const CREATE_USER_VALIDATION_SCHEMA = [
         [
             "id" => "email",
             "table" => "users",
@@ -85,5 +85,25 @@ class Helper
                 "message" => "Location name is required!",
             ],
         ],
+    ];
+
+    public const AUTH_USER_VALIDATION_SCHEMA = [
+        [
+            "rule" => "[a-z0-9-]+\@[a-z]{3,}\.[a-z]{2,}\.*[a-z]{0,}",
+            "code" => 400,
+            "asset" => [
+                "field" => "user_email",
+                "message" => "Invalid email address",
+            ],
+        ],
+        [
+            "rule" => "(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{10,64}",
+            "code" => 400,
+            "asset" => [
+                "field" => "user_password",
+                "message" =>
+                    "Password must contains atleast one uppercase letter, number and one of the ff (@,$,!,#,%,*,?,&) character.",
+            ],
+        ]
     ];
 }

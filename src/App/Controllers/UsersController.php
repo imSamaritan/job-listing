@@ -15,11 +15,19 @@ class UsersController
     ) {
     }
 
-    public function createUser(Request $request, Response $response): Response
+    public function create(Request $request, Response $response): Response
     {
         $userData = $request->getAttribute("userData");
-        $payload = $this->userRepository->create($userData);
+        $payload = $this->userRepository->register($userData);
         $response->getBody()->write(json_encode($payload));
+        return $response;
+    }
+
+    public function auth(Request $request, Response $response): Response
+    {
+        $userData = $request->getAttribute("userData");
+        $userAuthResponse = $this->userRepository->login($userData);
+        $response->getBody()->write(json_encode($userAuthResponse));
         return $response;
     }
 }
