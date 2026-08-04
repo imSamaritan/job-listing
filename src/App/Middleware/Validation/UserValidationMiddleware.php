@@ -17,8 +17,7 @@ class UserValidationMiddleware
     public function __construct(
         private ResponseFactory $responseFactory,
         private Database $database,
-    ) {
-    }
+    ) {}
 
     private function idFieldsValidator(array $schema, array $data): void
     {
@@ -79,10 +78,26 @@ class UserValidationMiddleware
         RequestHandler $requestHandler,
     ): Response {
         $userData = $request->getParsedBody();
+        $requestRoute = $request->getRequestTarget();
         $response = $this->responseFactory->createResponse();
-        $this->errors = [];
 
-        $errors = $this->validate(Helper::USER_VALIDATION_SCHEMA, $userData);
+        $this->errors = [];
+        $errors = [];
+
+        if ($requestRoute === "/api/create") {
+            $errors = $this->validate(
+                Helper::CREATE_USER_VALIDATION_SCHEMA,
+                $userData,
+            );
+        }
+
+        if ($requestRoute === "/api/auth") {
+            $errors = $this->validate(
+                Helper::AUTH_USER_VALIDATION_SCHEMA,
+                $userData,
+            );
+        }
+
         if (count($errors) > 0) {
             $response->getBody()->write(json_encode($errors));
             return $response;

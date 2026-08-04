@@ -11,8 +11,8 @@ use App\Helper\Helper;
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
     protected ?string $table = "users";
-    
-    public function get(int $id): array|bool
+
+    public function fetchUser(int $id): array|bool
     {
         $connection = $this->databaseConnection();
 
@@ -30,7 +30,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         return false;
     }
 
-    public function create(array $user): array|false
+    public function register(array $user): array|false
     {
         $connection = $this->databaseConnection();
         $allowedFields = Helper::INSERT_USER_ALLOWED_FIELDS;
@@ -61,10 +61,17 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         return $this->getPayload($user_id);
     }
 
+    public function login(array $user): array
+    {
+        return $user;
+    }
+
     private function getPayload(int $id): array
     {
-        $user = $this->get($id);
-        $selectedPayloadFields = array_flip(Helper::USER_PAYLOAD_SELECTED_FIELDS);
+        $user = $this->fetchUser($id);
+        $selectedPayloadFields = array_flip(
+            Helper::USER_PAYLOAD_SELECTED_FIELDS,
+        );
         return array_intersect_key($user, $selectedPayloadFields);
     }
 }
