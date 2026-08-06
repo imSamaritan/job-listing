@@ -7,41 +7,24 @@ namespace App\Repositories\Users;
 use App\Repositories\BaseRepository;
 use App\Interfaces\UserRepositoryInterface;
 use App\Helper\Helper;
+use App\Utilities\AuthTokenUtils;
 
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
     protected ?string $table = "users";
 
-    public function fetchUser(int $id): array|bool
-    {
-        $connection = $this->databaseConnection();
-
-        $allowedSelectedFields = Helper::GET_USER_SELECTED_FIELDS;
-        $fields = array_keys(array_flip($allowedSelectedFields));
-        $fields = implode(", ", $fields);
-
-        $sql = "SELECT {$fields} FROM {$this->table} WHERE user_id = ?;";
-        $statement = $connection->prepare($sql);
-
-        if ($statement->execute([$id])) {
-            return $statement->fetch();
-        }
-
-        return false;
-    }
-
     public function register(array $user): array|false
     {
-        $connection = $this->databaseConnection();
-        $allowedFields = Helper::INSERT_USER_ALLOWED_FIELDS;
-
         if ($user["user_role"] === "admin") {
             $user["pending_status"] = true;
         } else {
             $user["pending_status"] = null;
         }
 
-        $user = array_intersect_key($user, array_flip($allowedFields));
+        $user = array_intersect_key(
+            $user,
+            array_flip(Helper::INSERT_USER_ALLOWED_FIELDS),
+        );
         $fields = array_keys($user);
         $columns = implode(",", $fields);
 
@@ -50,28 +33,42 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
         $sql = "INSERT INTO {$this->table} ({$columns}) VALUES({$placeholders})";
 
-        $statement = $connection->prepare($sql);
-        $createUser = $statement->execute($user);
+        $statement = $this->databaseConnection()->prepare($sql);
 
-        if (!$createUser) {
-            return false;
+        $user["user_password"] = password_hash(
+            $user["user_password"],
+            PASSWORD_DEFAULT,
+        );
+        $executeCreateUser = $statement->execute($user);
+
+        if (!$executeCreateUser) {
+            return ["status" => false];
         }
 
-        $user_id = (int) $connection->lastInsertId("user_id");
-        return $this->getPayload($user_id);
+        return ["status" => true];
     }
 
     public function login(array $user): array
     {
-        return $user;
-    }
+        $response = $this->getPayload($user["user_email"]);
+        extract($response);
 
-    private function getPayload(int $id): array
-    {
-        $user = $this->fetchUser($id);
-        $selectedPayloadFields = array_flip(
-            Helper::USER_PAYLOAD_SELECTED_FIELDS,
-        );
-        return array_intersect_key($user, $selectedPayloadFields);
+        if ($payload === null) {
+            return $error;
+        }
+
+        $hashed_password = $payload["user_password"];
+        $password_verify = password_verify($user["user_password"], $hashed_password);
+        if ($password_verify === false) {
+            return [
+                "code" => Helper::AUTH_USER_VALIDATION_SCHEMA[1]["code"],
+                ...Helper::AUTH_USER_VALIDATION_SCHEMA[1]["asset"],
+            ];
+        }
+
+        unset($payload["user_password"]);
+        $token = AuthTokenUtils::generateToken($payload);
+
+        return ["token" => "Bearer {$token}" ];
     }
 }
