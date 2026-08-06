@@ -17,7 +17,8 @@ class UserValidationMiddleware
     public function __construct(
         private ResponseFactory $responseFactory,
         private Database $database,
-    ) {}
+    ) {
+    }
 
     private function idFieldsValidator(array $schema, array $data): void
     {
@@ -36,7 +37,7 @@ class UserValidationMiddleware
 
         if ($schema["id"] === "email") {
             $databaseConnection = $this->database->connect();
-            $sql = "SELECT * FROM {$schema["table"]} WHERE $fields[0] = ?";
+            $sql = "SELECT {$fields[0]} FROM {$schema["table"]} WHERE {$fields[0]} = ?";
             $statement = $databaseConnection->prepare($sql);
             $statement->execute([$data[$fields[0]]]);
             if ($statement->rowCount() > 0) {
@@ -100,7 +101,8 @@ class UserValidationMiddleware
 
         if (count($errors) > 0) {
             $response->getBody()->write(json_encode($errors));
-            return $response;
+            # Grab the top element status code
+            return $response->withStatus($errors[0]["code"]);
         }
 
         $request = $request->withAttribute("userData", $userData);
