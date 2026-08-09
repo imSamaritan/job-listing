@@ -9,15 +9,12 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use App\Helper\Helper;
-use App\Database;
 
 class UserValidationMiddleware
 {
     private array $errors = [];
-    public function __construct(
-        private ResponseFactory $responseFactory,
-        private Database $database,
-    ) {
+    public function __construct(private ResponseFactory $responseFactory)
+    {
     }
 
     private function idFieldsValidator(array $schema, array $data): void

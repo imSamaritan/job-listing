@@ -68,7 +68,7 @@ class Helper
             "asset" => [
                 "field" => "user_password",
                 "message" =>
-                    "Password must contains atleast one uppercase letter, number and one of (@,$,!,#,%,*,?,&) characters.",
+                    "Your password not accepted!",
             ],
         ],
         [
@@ -84,7 +84,7 @@ class Helper
             "code" => 422,
             "asset" => [
                 "field" => "user_location",
-                "message" => "Location name must be at least 5 characters.",
+                "message" => "Location name must be at least 5 characters long!",
             ],
         ],
     ];
