@@ -22,27 +22,13 @@ class UserValidationMiddleware
 
     private function idFieldsValidator(array $schema, array $data): void
     {
-        $fields = $schema["fields"];
         if ($schema["id"] === "password") {
+            $fields = $schema["fields"];
             $password = strtolower($data[$fields[0]]);
             $confirmPassword = strtolower($data[$fields[1]]);
             if ($password != $confirmPassword) {
                 $this->errors[] = [
                     "field" => $fields[1],
-                    "code" => $schema["code"],
-                    "message" => $schema["message"],
-                ];
-            }
-        }
-
-        if ($schema["id"] === "email") {
-            $databaseConnection = $this->database->connect();
-            $sql = "SELECT {$fields[0]} FROM {$schema["table"]} WHERE {$fields[0]} = ?";
-            $statement = $databaseConnection->prepare($sql);
-            $statement->execute([$data[$fields[0]]]);
-            if ($statement->rowCount() > 0) {
-                $this->errors[] = [
-                    "field" => $fields[0],
                     "code" => $schema["code"],
                     "message" => $schema["message"],
                 ];

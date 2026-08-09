@@ -37,8 +37,8 @@ class Helper
             "id" => "email",
             "table" => "users",
             "code" => 400,
-            "fields" => ["user_email"],
-            "message" => "Email address already taken!",
+            "field" => "user_email",
+            "message" => "User account can not be processed!",
         ],
         [
             "id" => "password",
