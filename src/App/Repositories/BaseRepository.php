@@ -19,7 +19,7 @@ abstract class BaseRepository
         return $this->database->connect();
     }
 
-    private function getUser(string $user_email): array|bool
+    protected function getUser(string $user_email): array|bool
     {
         $connection = $this->databaseConnection();
 
