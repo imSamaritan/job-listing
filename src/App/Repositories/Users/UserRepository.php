@@ -76,6 +76,6 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         unset($payload["user_password"]);
         $token = AuthTokenUtils::generateToken($payload);
 
-        return ["token" => "Bearer {$token}"];
+        return ["token" => "Bearer {$token}", "email" => $user["user_email"]];
     }
 }
