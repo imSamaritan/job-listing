@@ -8,6 +8,7 @@ use App\Middleware\JsonResponseHeaderMiddleware;
 use App\Controllers\Home\HomeController;
 use App\Controllers\Users\UsersController;
 use App\Middleware\Validation\UserValidationMiddleware;
+use App\Middleware\Auth\AuthMiddleware;
 
 require_once dirname(__DIR__) . "/helper/constant-variables-helper.php";
 require_once ROOT_PATH . "/vendor/autoload.php";
@@ -28,6 +29,7 @@ $handler->forceContentType("application/json");
 $app->addBodyParsingMiddleware();
 
 $app->get("/", HomeController::class);
+
 $app->post("/api/create", UsersController::class . ":create")
     ->add(UserValidationMiddleware::class)
     ->add(JsonResponseHeaderMiddleware::class);
@@ -36,6 +38,8 @@ $app->post("/api/auth", UsersController::class . ":auth")
     ->add(UserValidationMiddleware::class)
     ->add(JsonResponseHeaderMiddleware::class);
 
-$app->get("/dashboard", UsersController::class . ":dashboard");
+$app->get("/dashboard", UsersController::class . ":dashboard")
+    ->add(AuthMiddleware::class)
+    ->add(JsonResponseHeaderMiddleware::class);
 
 $app->run();

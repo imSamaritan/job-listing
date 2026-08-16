@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories\Users;
 
+use App\Database;
 use App\Repositories\BaseRepository;
 use App\Interfaces\UserRepositoryInterface;
 use App\Helper\Helper;
@@ -14,6 +15,12 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
     protected ?string $table = "users";
 
+    public function __construct(
+        private Database $database,
+        private AuthTokenUtils $auth_token_utils,
+    ) {
+        parent::__construct($database);
+    }
     public function register(array $user): array
     {
         try {
@@ -74,7 +81,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         }
 
         unset($payload["user_password"]);
-        $token = AuthTokenUtils::generateToken($payload);
+        $token = $this->auth_token_utils->generateToken($payload);
 
         return ["token" => "Bearer {$token}", "email" => $user["user_email"]];
     }

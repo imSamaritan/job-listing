@@ -8,9 +8,10 @@ use Slim\Psr7\Factory\ResponseFactory as ResponseFactory;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+use Psr\Http\Server\MiddlewareInterface;
 use App\Helper\Helper;
 
-class UserValidationMiddleware
+class UserValidationMiddleware implements MiddlewareInterface
 {
     private array $errors = [];
     public function __construct(private ResponseFactory $responseFactory)
@@ -57,7 +58,7 @@ class UserValidationMiddleware
         return $this->errors;
     }
 
-    public function __invoke(
+    public function process(
         Request $request,
         RequestHandler $requestHandler,
     ): Response {
