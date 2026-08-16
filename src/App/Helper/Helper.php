@@ -47,7 +47,7 @@ class Helper
             "message" => "Password fields does not match!",
         ],
         [
-            "rule" => "[a-zA-Z]{5,10}",
+            "rule" => "[a-zA-Z]{5,30}",
             "code" => 400,
             "asset" => [
                 "field" => "user_name",

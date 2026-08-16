@@ -14,7 +14,7 @@ class UsersController extends BaseController
 {
     public function __construct(
         private UserRepositoryInterface $userRepository,
-        private PhpRenderer $php_renderer
+        private PhpRenderer $php_renderer,
     ) {
         parent::__construct($php_renderer);
     }
@@ -37,8 +37,11 @@ class UsersController extends BaseController
 
     public function dashboard(Request $request, Response $response): Response
     {
+        $userData = $request->getAttribute("userData");
+
         return $this->render($response, "Users/Dashboard.phtml", [
             "title" => "Dashboard",
+            "userData" => $userData
         ]);
     }
 }

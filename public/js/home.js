@@ -3,7 +3,7 @@ document.addEventListener("alpine:init", function () {
         return {
             count: 0,
             increment: function () {
-                this.count += 1;
+                console.log("Make a reques")
             },
         };
     });
