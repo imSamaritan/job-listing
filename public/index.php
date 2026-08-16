@@ -5,8 +5,8 @@ declare(strict_types=1);
 use Slim\Factory\AppFactory;
 use DI\ContainerBuilder;
 use App\Middleware\JsonResponseHeaderMiddleware;
-use App\Controllers\HomeController;
-use App\Controllers\UsersController;
+use App\Controllers\Home\HomeController;
+use App\Controllers\Users\UsersController;
 use App\Middleware\Validation\UserValidationMiddleware;
 
 require_once dirname(__DIR__) . "/helper/constant-variables-helper.php";
@@ -35,5 +35,7 @@ $app->post("/api/create", UsersController::class . ":create")
 $app->post("/api/auth", UsersController::class . ":auth")
     ->add(UserValidationMiddleware::class)
     ->add(JsonResponseHeaderMiddleware::class);
+
+$app->get("/dashboard", UsersController::class . ":dashboard");
 
 $app->run();
