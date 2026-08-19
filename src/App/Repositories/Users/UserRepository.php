@@ -4,36 +4,26 @@ declare(strict_types=1);
 
 namespace App\Repositories\Users;
 
+use PDO;
+use PDOException;
 use App\Database;
-use App\Repositories\BaseRepository;
 use App\Interfaces\UserRepositoryInterface;
 use App\Helper\Helper;
-use App\Utilities\AuthTokenUtils;
-use PDOException;
 
-class UserRepository extends BaseRepository implements UserRepositoryInterface
+class UserRepository implements UserRepositoryInterface
 {
-    protected ?string $table = "users";
+    private ?string $table = "users";
+    private PDO $dbConnection;
 
-    public function __construct(
-        private Database $database,
-        private AuthTokenUtils $auth_token_utils,
-    ) {
-        parent::__construct($database);
+    public function __construct(private Database $database)
+    {
+        $this->dbConnection = $this->database->connect();
     }
-    public function register(array $user): array
+
+    public function createUser(array $user): array|bool
     {
         try {
-            if ($user["user_role"] === "admin") {
-                $user["pending_status"] = true;
-            } else {
-                $user["pending_status"] = null;
-            }
-
-            $user = array_intersect_key(
-                $user,
-                array_flip(Helper::INSERT_USER_ALLOWED_FIELDS),
-            );
+            $user = array_intersect_key($user, array_flip(Helper::INSERT_USER_ALLOWED_FIELDS));
             $fields = array_keys($user);
             $columns = implode(",", $fields);
 
@@ -42,15 +32,9 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
             $sql = "INSERT INTO {$this->table} ({$columns}) VALUES({$placeholders})";
 
-            $statement = $this->databaseConnection()->prepare($sql);
+            $statement = $this->dbConnection->prepare($sql);
+            return $statement->execute($user);
 
-            $user["user_password"] = password_hash(
-                $user["user_password"],
-                PASSWORD_DEFAULT,
-            );
-
-            $statement->execute($user);
-            return ["status" => true];
         } catch (PDOException $e) {
             return array_intersect_key(
                 Helper::CREATE_USER_VALIDATION_SCHEMA[0],
@@ -59,30 +43,20 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         }
     }
 
-    public function login(array $user): array
+    public function getUserWithEmail(string $user_email): array|bool
     {
-        $response = $this->getPayload($user["user_email"]);
-        extract($response);
+        $allowedSelectedFields = Helper::GET_USER_SELECTED_FIELDS;
+        $fields = array_keys(array_flip($allowedSelectedFields));
+        $fields = implode(", ", $fields);
 
-        if ($payload === null) {
-            return $error;
+        $sql = "SELECT {$fields} FROM {$this->table} WHERE user_email = ?;";
+        $statement = $this->dbConnection->prepare($sql);
+
+        if ($statement->execute([$user_email])) {
+            return $statement->fetch();
         }
 
-        $hashed_password = $payload["user_password"];
-        $password_verify = password_verify(
-            $user["user_password"],
-            $hashed_password,
-        );
-        if ($password_verify === false) {
-            return [
-                "code" => Helper::AUTH_USER_VALIDATION_SCHEMA[1]["code"],
-                ...Helper::AUTH_USER_VALIDATION_SCHEMA[1]["asset"],
-            ];
-        }
-
-        unset($payload["user_password"]);
-        $token = $this->auth_token_utils->generateToken($payload);
-
-        return ["token" => "Bearer {$token}", "email" => $user["user_email"]];
+        return false;
     }
+
 }
