@@ -34,7 +34,6 @@ class UserRepository implements UserRepositoryInterface
 
             $statement = $this->dbConnection->prepare($sql);
             return $statement->execute($user);
-
         } catch (PDOException $e) {
             return array_intersect_key(
                 Helper::CREATE_USER_VALIDATION_SCHEMA[0],
@@ -58,5 +57,4 @@ class UserRepository implements UserRepositoryInterface
 
         return false;
     }
-
 }

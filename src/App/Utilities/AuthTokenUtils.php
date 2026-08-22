@@ -31,18 +31,11 @@ class AuthTokenUtils
         return JWT::encode($payload, $this->secretKey, $this->algorithm);
     }
 
-    public function verifyToken(string $authHeader): ?array
+    public function verifyToken(string $token): ?array
     {
-        if (
-            empty($authHeader) ||
-            !preg_match("#Bearer\s+(\S+)#i", $authHeader, $matches)
-        ) {
-            return null;
-        }
-
         try {
             $user = JWT::decode(
-                $matches[1],
+                $token,
                 new Key($this->secretKey, $this->algorithm),
             );
             return (array) $user->data;
