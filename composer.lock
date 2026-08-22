@@ -4,8 +4,45 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c083511f53c4c69b736e0f25398323a2",
+    "content-hash": "8d2b8c927f482e250443b858dd295040",
     "packages": [
+        {
+            "name": "asamaritan/cookie",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/imSamaritan/asamaritan-cookie.git",
+                "reference": "b7b60af5fa96a33b8a67a67d521781eb6eca8423"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/imSamaritan/asamaritan-cookie/zipball/b7b60af5fa96a33b8a67a67d521781eb6eca8423",
+                "reference": "b7b60af5fa96a33b8a67a67d521781eb6eca8423",
+                "shasum": ""
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Asamaritan\\Cookie\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "imsamaritan",
+                    "email": "aicodemate.talk@gmail.com"
+                }
+            ],
+            "support": {
+                "issues": "https://github.com/imSamaritan/asamaritan-cookie/issues",
+                "source": "https://github.com/imSamaritan/asamaritan-cookie/tree/main"
+            },
+            "time": "2026-08-22T17:16:15+00:00"
+        },
         {
             "name": "fig/http-message-util",
             "version": "1.1.5",
@@ -1463,10 +1500,12 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "asamaritan/cookie": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {},
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }
