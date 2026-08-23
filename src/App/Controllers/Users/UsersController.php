@@ -37,6 +37,7 @@ class UsersController extends BaseController
     public function auth(Request $request, Response $response): Response
     {
         $userData = $request->getAttribute("userData");
+        //Authenticate user
         $userResponse = $this->authService->login($userData);
         $token_name = "user_token_4500";
 
@@ -44,7 +45,7 @@ class UsersController extends BaseController
             $this->cookie->remove($token_name);
         }
 
-        #Create 1 hour cookie
+        #Create 1 hour cookie, if user response contains a token
         if (isset($userResponse["token"])) {
             $this->cookie
                 ->name($token_name)
@@ -58,15 +59,5 @@ class UsersController extends BaseController
 
         $response->getBody()->write(json_encode($userResponse));
         return $response;
-    }
-
-    public function dashboard(Request $request, Response $response): Response
-    {
-        $userData = $request->getAttribute("userData");
-
-        return $this->render($response, "Users/Dashboard.phtml", [
-            "title" => "Dashboard",
-            "userData" => $userData,
-        ]);
     }
 }
