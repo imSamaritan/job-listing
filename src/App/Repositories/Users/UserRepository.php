@@ -48,7 +48,7 @@ class UserRepository implements UserRepositoryInterface
         $fields = array_keys(array_flip($allowedSelectedFields));
         $fields = implode(", ", $fields);
 
-        $sql = "SELECT {$fields} FROM {$this->table} WHERE user_email = ?;";
+        $sql = "SELECT {$fields} FROM {$this->table} WHERE email = ?;";
         $statement = $this->dbConnection->prepare($sql);
 
         if ($statement->execute([$user_email])) {

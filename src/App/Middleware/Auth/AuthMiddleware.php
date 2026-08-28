@@ -33,12 +33,12 @@ class AuthMiddleware implements MiddlewareInterface
         Request $request,
         RequestHandler $request_handler,
     ): Response {
-
-        if (!$this->cookie->find("user_token_4500")) {
+        $cookie_name = $_ENV["USER_COOKIE_NAME"];
+        if (!$this->cookie->find($cookie_name)) {
             return $this->unAuthorized();
         }
 
-        $token = $this->cookie->get("user_token_4500");
+        $token = $this->cookie->get($cookie_name);
         if ($token === "") {
             return $this->unAuthorized();
         }

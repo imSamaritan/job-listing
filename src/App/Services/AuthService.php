@@ -18,14 +18,14 @@ class AuthService
 
     public function register(array $user): array|bool
     {
-        if ($user["user_role"] === "admin") {
-            $user["pending_status"] = true;
+        if ($user["role"] === "admin") {
+            $user["status"] = true;
         } else {
-            $user["pending_status"] = null;
+            $user["status"] = null;
         }
 
-        $user["user_password"] = password_hash(
-            $user["user_password"],
+        $user["password"] = password_hash(
+            $user["password"],
             PASSWORD_DEFAULT,
         );
 
@@ -34,7 +34,7 @@ class AuthService
 
     public function login(array $user): array
     {
-        $userPayloadRequest = $this->getUserPayload($user["user_email"]);
+        $userPayloadRequest = $this->getUserPayload($user["email"]);
         $payload = $userPayloadRequest["payload"];
         $payloadError = $userPayloadRequest["error"];
 
@@ -42,9 +42,9 @@ class AuthService
             return $payloadError;
         }
 
-        $payloadHashedPassword = $payload["user_password"];
+        $payloadHashedPassword = $payload["password"];
         $verifyPassword = password_verify(
-            $user["user_password"],
+            $user["password"],
             $payloadHashedPassword,
         );
 
@@ -55,15 +55,15 @@ class AuthService
             ];
         }
 
-        unset($payload["user_password"]);
+        unset($payload["password"]);
         $token = $this->authTokenUtils->generateToken($payload);
 
         return ["token" => $token];
     }
 
-    private function getUserPayload(string $user_email): array
+    private function getUserPayload(string $email): array
     {
-        $user = $this->userRepository->getUserWithEmail($user_email);
+        $user = $this->userRepository->getUserWithEmail($email);
 
         if (!$user) {
             return [
