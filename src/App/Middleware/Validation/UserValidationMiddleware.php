@@ -14,9 +14,7 @@ use App\Helper\Helper;
 class UserValidationMiddleware implements MiddlewareInterface
 {
     private array $errors = [];
-    public function __construct(private ResponseFactory $responseFactory)
-    {
-    }
+    public function __construct(private ResponseFactory $responseFactory) {}
 
     private function idFieldsValidator(array $schema, array $data): void
     {
@@ -45,8 +43,9 @@ class UserValidationMiddleware implements MiddlewareInterface
 
             $target = $schema["asset"]["field"];
             $message = $schema["asset"]["message"];
+            $rule = $schema["rule"];
 
-            if (!preg_match("#^" . $schema["rule"] . "$#", $data[$target])) {
+            if (!preg_match("#^" . $rule . "$#", $data[$target])) {
                 $this->errors[] = [
                     "field" => $target,
                     "code" => $schema["code"],
