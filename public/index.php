@@ -8,6 +8,7 @@ use App\Middleware\JsonResponseHeaderMiddleware;
 use App\Controllers\Home\HomeController;
 use App\Controllers\Users\UsersController;
 use App\Controllers\Users\UsersDashboardController;
+use App\Controllers\Users\UsersResetPasswordController;
 use App\Middleware\Validation\UserValidationMiddleware;
 use App\Middleware\Auth\AuthMiddleware;
 
@@ -31,16 +32,23 @@ $app->addBodyParsingMiddleware();
 
 $app->get("/", HomeController::class);
 
+$app->get("/dashboard", UsersDashboardController::class . ":dashboard")
+    ->add(AuthMiddleware::class)
+    ->add(JsonResponseHeaderMiddleware::class);
+
+$app->get("/reset/password", [
+    UsersResetPasswordController::class,
+    "resetPassword",
+]);
+
+// ----API----
+
 $app->post("/api/create", UsersController::class . ":create")
     ->add(UserValidationMiddleware::class)
     ->add(JsonResponseHeaderMiddleware::class);
 
 $app->post("/api/auth", UsersController::class . ":auth")
     ->add(UserValidationMiddleware::class)
-    ->add(JsonResponseHeaderMiddleware::class);
-
-$app->get("/dashboard", UsersDashboardController::class . ":dashboard")
-    ->add(AuthMiddleware::class)
     ->add(JsonResponseHeaderMiddleware::class);
 
 $app->run();
