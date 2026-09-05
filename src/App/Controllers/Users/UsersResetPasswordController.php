@@ -16,7 +16,7 @@ class UsersResetPasswordController extends BaseController
         parent::__construct($php_renderer);
     }
 
-    public function resetPassword(
+    public function index(
         Request $request,
         Response $response,
     ): Response {

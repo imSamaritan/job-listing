@@ -8,42 +8,40 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Server\MiddlewareInterface;
-use Slim\Psr7\Factory\ResponseFactory as ResponseFactory;
+use Psr\Http\Message\ResponseFactoryInterface;
 use App\Utilities\AuthTokenUtils;
 use Asamaritan\Cookie\Cookie;
-use Slim\Views\PhpRenderer;
 
 class AuthMiddleware implements MiddlewareInterface
 {
     public function __construct(
-        private ResponseFactory $response_factory,
-        private AuthTokenUtils $auth_token_utils,
-        private PhpRenderer $php_renderer,
+        private ResponseFactoryInterface $responseFactory,
+        private AuthTokenUtils $authTokenUtils,
         private Cookie $cookie,
-    ) {
-    }
+        private string $cookie_name,
+    ) {}
 
     private function unAuthorized(): Response
     {
-        $response = $this->response_factory->createResponse();
-        return $this->php_renderer->render($response, "Home/Index.phtml", ["title" => "Home", "count" => 0]);
+        return $this->responseFactory
+            ->createResponse(code: 302)
+            ->withHeader("Location", "/login");
     }
 
     public function process(
         Request $request,
         RequestHandler $request_handler,
     ): Response {
-        $cookie_name = $_ENV["USER_COOKIE_NAME"];
-        if (!$this->cookie->find($cookie_name)) {
+        if (!$this->cookie->find($this->cookie_name)) {
             return $this->unAuthorized();
         }
 
-        $token = $this->cookie->get($cookie_name);
-        if ($token === "") {
+        $token = $this->cookie->get($this->cookie_name);
+        if (empty($token)) {
             return $this->unAuthorized();
         }
 
-        $payload = $this->auth_token_utils->verifyToken($token);
+        $payload = $this->authTokenUtils->verifyToken($token);
         if (!$payload) {
             return $this->unAuthorized();
         }

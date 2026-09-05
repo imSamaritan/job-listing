@@ -17,11 +17,19 @@ class UsersController extends BaseController
         private AuthService $authService,
         private Cookie $cookie,
         private PhpRenderer $php_renderer,
+        private string $cookie_name
     ) {
         parent::__construct($php_renderer);
     }
 
-    public function create(Request $request, Response $response): Response
+    public function registerIndex(Request $request, Response $response): Response
+    {
+        return $this->render($response, "Users/Register.phtml", [
+            "title" => "Create Account",
+        ]);
+    }
+
+    public function register(Request $request, Response $response): Response
     {
         $userData = $request->getAttribute("userData");
         $res = $this->authService->register($userData);
@@ -34,21 +42,26 @@ class UsersController extends BaseController
         return $response;
     }
 
-    public function auth(Request $request, Response $response): Response
+    public function loginIndex(Request $request, Response $response): Response
+    {
+        return $this->render($response, "Users/Login.phtml", [
+            "title" => "Login",
+        ]);
+    }
+
+    public function login(Request $request, Response $response): Response
     {
         $userData = $request->getAttribute("userData");
-        //Authenticate user
         $userResponse = $this->authService->login($userData);
-        $token_name = "user_token_4500";
 
-        if ($this->cookie->find($token_name)) {
-            $this->cookie->remove($token_name);
+        if ($this->cookie->find($this->cookie_name)) {
+            $this->cookie->remove($this->cookie_name);
         }
 
         #Create 1 hour cookie, if user response contains a token
         if (isset($userResponse["token"])) {
             $this->cookie
-                ->name($token_name)
+                ->name($this->cookie_name)
                 ->value($userResponse["token"])
                 ->expires(3600)
                 ->secure(false)

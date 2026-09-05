@@ -38,7 +38,7 @@ class Helper
             "table" => "users",
             "code" => 400,
             "field" => "email",
-            "message" => "There was a problem, trying to create your account!",
+            "message" => "There was a problem trying to create your account!",
         ],
         [
             "id" => "password",
