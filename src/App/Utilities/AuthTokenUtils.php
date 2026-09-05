@@ -10,14 +10,8 @@ use Firebase\JWT\Key;
 
 class AuthTokenUtils
 {
-    private string $secretKey;
-    private string $algorithm;
-
-    public function __construct()
-    {
-        $this->secretKey = $_ENV["JWT_SECRET_KEY"];
-        $this->algorithm = $_ENV["JWT_ALGORITHM"];
-    }
+    public function __construct(private string $secret_key, private string $algorithm)
+    {}
 
     public function generateToken(array $payload): string
     {
@@ -28,7 +22,7 @@ class AuthTokenUtils
             "exp" => $time + 3600,
             "data" => [...$payload],
         ];
-        return JWT::encode($payload, $this->secretKey, $this->algorithm);
+        return JWT::encode($payload, $this->secret_key, $this->algorithm);
     }
 
     public function verifyToken(string $token): ?array
@@ -36,7 +30,7 @@ class AuthTokenUtils
         try {
             $user = JWT::decode(
                 $token,
-                new Key($this->secretKey, $this->algorithm),
+                new Key($this->secret_key, $this->algorithm),
             );
             return (array) $user->data;
         } catch (Exception $e) {

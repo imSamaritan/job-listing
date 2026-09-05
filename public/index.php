@@ -31,15 +31,13 @@ $handler->forceContentType("application/json");
 $app->addBodyParsingMiddleware();
 
 $app->get("/", HomeController::class);
+$app->get("/login", UsersController::class . ":login");
+$app->get("/register", UsersController::class . ":register");
 
 $app->get("/dashboard", UsersDashboardController::class . ":dashboard")
-    ->add(AuthMiddleware::class)
-    ->add(JsonResponseHeaderMiddleware::class);
+    ->add(AuthMiddleware::class);
 
-$app->get("/reset/password", [
-    UsersResetPasswordController::class,
-    "resetPassword",
-]);
+$app->get("/reset/password", UsersResetPasswordController::class . ":resetPassword");
 
 // ----API----
 
