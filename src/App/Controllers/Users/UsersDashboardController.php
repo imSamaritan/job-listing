@@ -16,13 +16,17 @@ class UsersDashboardController extends BaseController
         parent::__construct($php_renderer);
     }
 
-    public function dashboard(Request $request, Response $response): Response
+    public function index(Request $request, Response $response): Response
     {
         $userPayload = $request->getAttribute("userData");
 
-        return $this->render($response, "Users/Dashboard.phtml", [
-            "title" => "Dashboard",
-            "userData" => $userPayload,
-        ]);
+        return $this->render(
+            $response->withStatus(302),
+            "Users/Dashboard.phtml",
+            [
+                "title" => "Dashboard",
+                "userData" => $userPayload,
+            ],
+        );
     }
 }

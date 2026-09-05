@@ -12,7 +12,7 @@ use App\Controllers\Users\UsersResetPasswordController;
 use App\Middleware\Validation\UserValidationMiddleware;
 use App\Middleware\Auth\AuthMiddleware;
 
-require_once dirname(__DIR__) . "/helper/constant-variables-helper.php";
+require_once dirname(__DIR__) . "/config/constants.php";
 require_once ROOT_PATH . "/vendor/autoload.php";
 
 $containerBuilder = new ContainerBuilder();
@@ -31,21 +31,21 @@ $handler->forceContentType("application/json");
 $app->addBodyParsingMiddleware();
 
 $app->get("/", HomeController::class);
-$app->get("/login", UsersController::class . ":login");
-$app->get("/register", UsersController::class . ":register");
+$app->get("/login", UsersController::class . ":loginIndex");
+$app->get("/register", UsersController::class . ":registerIndex");
 
-$app->get("/dashboard", UsersDashboardController::class . ":dashboard")
+$app->get("/dashboard", UsersDashboardController::class . ":index")
     ->add(AuthMiddleware::class);
 
-$app->get("/reset/password", UsersResetPasswordController::class . ":resetPassword");
+$app->get("/reset/password", UsersResetPasswordController::class . ":index");
 
 // ----API----
 
-$app->post("/api/create", UsersController::class . ":create")
+$app->post("/api/create", UsersController::class . ":register")
     ->add(UserValidationMiddleware::class)
     ->add(JsonResponseHeaderMiddleware::class);
 
-$app->post("/api/auth", UsersController::class . ":auth")
+$app->post("/api/auth", UsersController::class . ":login")
     ->add(UserValidationMiddleware::class)
     ->add(JsonResponseHeaderMiddleware::class);
 

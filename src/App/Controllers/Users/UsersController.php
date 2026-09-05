@@ -22,14 +22,14 @@ class UsersController extends BaseController
         parent::__construct($php_renderer);
     }
 
-    public function register(Request $request, Response $response): Response
+    public function registerIndex(Request $request, Response $response): Response
     {
         return $this->render($response, "Users/Register.phtml", [
             "title" => "Create Account",
         ]);
     }
 
-    public function create(Request $request, Response $response): Response
+    public function register(Request $request, Response $response): Response
     {
         $userData = $request->getAttribute("userData");
         $res = $this->authService->register($userData);
@@ -42,14 +42,14 @@ class UsersController extends BaseController
         return $response;
     }
 
-    public function login(Request $request, Response $response): Response
+    public function loginIndex(Request $request, Response $response): Response
     {
         return $this->render($response, "Users/Login.phtml", [
             "title" => "Login",
         ]);
     }
 
-    public function auth(Request $request, Response $response): Response
+    public function login(Request $request, Response $response): Response
     {
         $userData = $request->getAttribute("userData");
         $userResponse = $this->authService->login($userData);

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-require_once dirname(__DIR__) . "/helper/constant-variables-helper.php";
+require_once __DIR__ . "/constants.php";
 
 use App\Database;
 use Dotenv\Dotenv;
@@ -19,16 +19,22 @@ use App\Utilities\AuthTokenUtils;
 $dotenv = Dotenv::createImmutable(ROOT_PATH);
 $dotenv->safeLoad();
 
+$cookie_name = $_ENV["USER_COOKIE_NAME"] ?? "user_token_4500";
+
 return [
     ResponseFactoryInterface::class => DI\get(ResponseFactory::class),
 
     UserRepositoryInterface::class => DI\get(UserRepository::class),
 
-    UsersController::class => DI\autowire()
-        ->constructorParameter("cookie_name", $_ENV["USER_COOKIE_NAME"] ?? "user_token_4500"),
+    UsersController::class => DI\autowire()->constructorParameter(
+        "cookie_name",
+        $cookie_name,
+    ),
 
-    AuthMiddleware::class => DI\autowire()
-        ->constructorParameter('cookie_name', $_ENV["USER_COOKIE_NAME"] ?? "user_token_4500"),
+    AuthMiddleware::class => DI\autowire()->constructorParameter(
+        "cookie_name",
+        $cookie_name,
+    ),
 
     PhpRenderer::class => function () {
         $renderer = new PhpRenderer(ROOT_PATH . "/templates");
@@ -45,10 +51,10 @@ return [
         );
     },
 
-    AuthTokenUtils::class => function() {
+    AuthTokenUtils::class => function () {
         return new AuthTokenUtils(
             secret_key: $_ENV["JWT_SECRET_KEY"],
-            algorithm: $_ENV["JWT_ALGORITHM"]
+            algorithm: $_ENV["JWT_ALGORITHM"],
         );
-    }
+    },
 ];

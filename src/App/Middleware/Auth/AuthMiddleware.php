@@ -18,14 +18,13 @@ class AuthMiddleware implements MiddlewareInterface
         private ResponseFactoryInterface $responseFactory,
         private AuthTokenUtils $authTokenUtils,
         private Cookie $cookie,
-        private string $cookie_name
-    ) {
-    }
+        private string $cookie_name,
+    ) {}
 
     private function unAuthorized(): Response
     {
         return $this->responseFactory
-            ->createResponse(302)
+            ->createResponse(code: 302)
             ->withHeader("Location", "/login");
     }
 
@@ -33,16 +32,15 @@ class AuthMiddleware implements MiddlewareInterface
         Request $request,
         RequestHandler $request_handler,
     ): Response {
-        
         if (!$this->cookie->find($this->cookie_name)) {
             return $this->unAuthorized();
         }
-        
+
         $token = $this->cookie->get($this->cookie_name);
         if (empty($token)) {
             return $this->unAuthorized();
         }
-        
+
         $payload = $this->authTokenUtils->verifyToken($token);
         if (!$payload) {
             return $this->unAuthorized();
