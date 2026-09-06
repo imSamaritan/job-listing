@@ -10,6 +10,7 @@ use App\Controllers\Users\UsersController;
 use App\Controllers\Users\UsersDashboardController;
 use App\Controllers\Users\UsersResetPasswordController;
 use App\Middleware\Validation\UserValidationMiddleware;
+use App\Middleware\Validation\UserEmailValidationMiddleware;
 use App\Middleware\Auth\AuthMiddleware;
 
 require_once dirname(__DIR__) . "/config/constants.php";
@@ -47,6 +48,10 @@ $app->post("/api/create", UsersController::class . ":register")
 
 $app->post("/api/auth", UsersController::class . ":login")
     ->add(UserValidationMiddleware::class)
+    ->add(JsonResponseHeaderMiddleware::class);
+
+$app->post("/api/reset/password", UsersResetPasswordController::class . ":request")
+    ->add(UserEmailValidationMiddleware::class)
     ->add(JsonResponseHeaderMiddleware::class);
 
 $app->run();

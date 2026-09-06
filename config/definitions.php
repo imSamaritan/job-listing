@@ -11,10 +11,14 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\Psr7\Factory\ResponseFactory;
 // use Psr\Container\ContainerInterface;
 use App\Interfaces\UserRepositoryInterface;
+use App\Interfaces\UserResetPasswordRepositoryInterface;
 use App\Repositories\Users\UserRepository;
+use App\Repositories\Users\UserPasswordResetRepository;
 use App\Middleware\Auth\AuthMiddleware;
 use App\Controllers\Users\UsersController;
 use App\Utilities\AuthTokenUtils;
+use App\Utilities\ResetPasswordTokenUtils;
+use PHPMailer\PHPMailer\PHPMailer;
 
 $dotenv = Dotenv::createImmutable(ROOT_PATH);
 $dotenv->safeLoad();
@@ -26,16 +30,16 @@ return [
 
     UserRepositoryInterface::class => DI\get(UserRepository::class),
 
-    UsersController::class => DI\autowire()->constructorParameter(
-        "cookie_name",
-        $cookie_name,
-    ),
+    UserResetPasswordRepositoryInterface::class => DI\get(UserPasswordResetRepository::class),
+    
+    PHPMailer::class => function() {
+        return new PHPMailer(true);
+    },
+    
+    UsersController::class => DI\autowire()->constructorParameter("cookie_name", $cookie_name),
 
-    AuthMiddleware::class => DI\autowire()->constructorParameter(
-        "cookie_name",
-        $cookie_name,
-    ),
-
+    AuthMiddleware::class => DI\autowire()->constructorParameter("cookie_name", $cookie_name),
+    
     PhpRenderer::class => function () {
         $renderer = new PhpRenderer(ROOT_PATH . "/templates");
         $renderer->setLayout("layouts/layout.phtml");
@@ -56,5 +60,11 @@ return [
             secret_key: $_ENV["JWT_SECRET_KEY"],
             algorithm: $_ENV["JWT_ALGORITHM"],
         );
+    },
+
+    ResetPasswordTokenUtils::class => function() {
+      return new ResetPasswordTokenUtils(
+        algorithm: $_ENV["RESET_PASSWORD_HASH_ALGORITHM"]
+      ); 
     },
 ];
