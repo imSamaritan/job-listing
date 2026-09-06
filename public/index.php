@@ -39,6 +39,7 @@ $app->get("/dashboard", UsersDashboardController::class . ":index")
     ->add(AuthMiddleware::class);
 
 $app->get("/reset/password", UsersResetPasswordController::class . ":index");
+$app->get("/password/reset", UsersResetPasswordController::class . ":resetIndex");
 
 // ----API----
 

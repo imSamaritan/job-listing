@@ -9,31 +9,34 @@ use PHPMailer\PHPMailer\Exception;
 
 class MailService
 {
-    public function __construct(private PHPMailer $mailer) {}
-        
-    public function sendResetEmail(string $to, string $resetUrl): bool
-    {
+    public function __construct(
+        private PHPMailer $mailer,
+        private string $username,
+        private string $password,
+    ) {}
+
+    public function sendResetEmail(
+        string $to,
+        string $subject,
+        string $body,
+        string $resetUrl = "",
+        string $name = "Job Board",
+    ): bool {
         try {
             $this->mailer->isSMTP();
             $this->mailer->Host = "smtp.gmail.com";
             $this->mailer->SMTPAuth = true;
-            $this->mailer->Username = "aicodemate.talk@gmail.com";
-            $this->mailer->Password = "nmup duim lsbw seaq"; // Google App Password
+            $this->mailer->Username = $this->username;
+            $this->mailer->Password = $this->password; // Google App Password
             $this->mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $this->mailer->Port = 587;
 
-            $this->mailer->setFrom("aicodemate@gmail.com", "Job Board");
+            $this->mailer->setFrom($this->username, $name);
             $this->mailer->addAddress($to);
 
             $this->mailer->isHTML(true);
-            $this->mailer->Subject = "Reset password request";
-            $this->mailer->Body = "
-                <div>
-                    <p>Click on the link below to reset your account's password. Thank You❤️🙏🏾</p>
-                    <br/>
-                    <a href='{$resetUrl}' target='_blank'>{$resetUrl}...</a>
-                </div>
-            ";
+            $this->mailer->Subject = $subject;
+            $this->mailer->Body = $body;
 
             $this->mailer->send();
             return true;
