@@ -32,6 +32,7 @@ class UserPasswordResetRepository implements
             $statement = $this->dbConnection->prepare($sql);
             $statement->bindValue(1, $id, PDO::PARAM_INT);
             $statement->bindValue(2, $hashedToken, PDO::PARAM_STR);
+            
             return $statement->execute();
         } catch (PDOException $error) {
             return false;
