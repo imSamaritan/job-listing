@@ -99,7 +99,7 @@ class UsersResetPasswordController extends BaseController
                             </div>
                         </div>
                     ";
-                    $send = $this->mail->sendResetEmail($userEmail, "Password reset", $body, "Job Listing", $reset_url);
+                    $send = $this->mail->sendResetEmail($userEmail, "Password reset", $body);
                     if ($send) {
                         $res = [
                             "status" => "redirect",

@@ -19,7 +19,6 @@ class MailService
         string $to,
         string $subject,
         string $body,
-        string $resetUrl = "",
         string $name = "Job Board",
     ): bool {
         try {
