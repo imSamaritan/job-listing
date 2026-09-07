@@ -41,19 +41,18 @@ class UsersResetPasswordController extends BaseController
     public function request(Request $request, Response $response): Response
     {
         $userEmail = $request->getAttribute("userEmail");
+        $failureResponse =  ["message" => "Please, check your email address!"];
+        $successResponse = ["message" => "Email sent!, Please check your email's inbox for a reset password link. Thank You❤️🙏🏾."];
         $res = null;
 
         if ($userEmail === null) {
-            $res = ["message" => "Please, check your email address!"];
+            $res = failureResponse;
         } else {
             $userId = $this->resetPasswordService->getUserIdByEmail($userEmail);
 
             // If user is not registered, send a fake success !
             if ($userId === null) {
-                $res = [
-                    "message" =>
-                        "Email sent!, Please check your email's inbox for a reset password link. Thank You❤️🙏🏾.",
-                ];
+                $res = $successResponse;
             }
 
             if ($userId) {
@@ -63,19 +62,19 @@ class UsersResetPasswordController extends BaseController
                 // Hash a token
                 $hashedToken = $this->resetTokenUtils->hashToken($token);
 
-                // Check if there is any records in the password_reset table related to currect userID
+                // Check if there is any record in the password_reset table related to currect userID
                 // user_id is UNIQUE
-                $recordsExists = $this->resetPasswordService->checkExistingRecordsByUserId(
+                $recordExists = $this->resetPasswordService->checkRecordByUserId(
                     $userId,
                 );
 
                 // If any records exists, clear them
-                if ($recordsExists) {
-                    $this->resetPasswordService->clearRecordsByUserId($userId);
+                if ($recordExists) {
+                    $this->resetPasswordService->clearRecordByUserId($userId);
                 }
 
-                // Same currect reset password records [user_id, hashed_token]
-                $saveRecordsRequest = $this->resetPasswordService->saveResetRecords(
+                // Save currect reset password record [user_id, hashed_token]
+                $savingRecord = $this->resetPasswordService->saveResetRecord(
                     [
                         "user_id" => $userId,
                         "hashed_token" => $hashedToken,
@@ -83,8 +82,11 @@ class UsersResetPasswordController extends BaseController
                 );
 
                 // Check if a records was successfully saved
-                if ($saveRecordsRequest === true) {
+                if ($savingRecord === true) {
+                    //Generate reset url
                     $reset_url = "{$this->reset_password_url}?token={$token}";
+                    
+                    //Prepare html email message body
                     $body = "
                         <div>
                             <h2 color='red'>Password reset !</h2>
@@ -99,20 +101,19 @@ class UsersResetPasswordController extends BaseController
                             </div>
                         </div>
                     ";
+
+                    //Send email
                     $send = $this->mail->sendResetEmail($userEmail, "Password reset", $body);
+
+                    //Check if email has been sent and response back to client else, send fail report if email cannot be sent
                     if ($send) {
-                        $res = [
-                            "status" => "redirect",
-                            "message" =>
-                                "Email sent!, Please check your email's inbox for a reset password link. Thank You❤️🙏🏾.",
-                        ];
+                        $res = $successResponse;
+                    } else {
+                         $res = $failureResponse;
                     }
+                    
                 } else {
-                    $res = [
-                        "status" => "redirect",
-                        "message" =>
-                            "Email sent!, Please check your email's inbox for a reset password link. Thank You❤️🙏🏾.",
-                    ];
+                    $res = $failureResponse;
                 }
             }
         }
