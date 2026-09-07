@@ -39,7 +39,7 @@ class UserPasswordResetRepository implements
         }
     }
 
-    public function checkExistence(int $userId): bool
+    public function checkRecordById(int $userId): bool
     {
         $sql = "SELECT hashed_token FROM {$this->table} WHERE user_id = ?";
         $statement = $this->dbConnection->prepare($sql);

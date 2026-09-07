@@ -46,7 +46,7 @@ class UsersResetPasswordController extends BaseController
         $res = null;
 
         if ($userEmail === null) {
-            $res = failureResponse;
+            $res = $failureResponse;
         } else {
             $userId = $this->resetPasswordService->getUserIdByEmail($userEmail);
 
