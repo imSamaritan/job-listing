@@ -25,9 +25,9 @@ class ResetPasswordService
         return $this->userResetPasswordRepository->save($records);
     }
 
-    public function checkExistingRecordsByUserId(int $userId): bool
+    public function checkRecordByUserId(int $userId): bool
     {
-        return $this->userResetPasswordRepository->checkExistence($userId);
+        return $this->userResetPasswordRepository->checkRecordById($userId);
     }
 
     public function clearRecordsByUserId(int $userId): bool
