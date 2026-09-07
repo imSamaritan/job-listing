@@ -20,7 +20,7 @@ class ResetPasswordService
         return $user["id"] ?? null;
     }
 
-    public function saveResetRecords(array $records): bool
+    public function saveResetRecord(array $records): bool
     {
         return $this->userResetPasswordRepository->save($records);
     }
@@ -30,7 +30,7 @@ class ResetPasswordService
         return $this->userResetPasswordRepository->checkRecordById($userId);
     }
 
-    public function clearRecordsByUserId(int $userId): bool
+    public function clearRecordByUserId(int $userId): bool
     {
         return $this->userResetPasswordRepository->clear($userId);
     }
