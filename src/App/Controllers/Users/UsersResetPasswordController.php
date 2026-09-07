@@ -84,8 +84,9 @@ class UsersResetPasswordController extends BaseController
         }
 
         //Reset password url
-        $resetUrl = "{$this->reset_password_url}?token={$token}";
-        $safeUrl = htmlspecialchars($resetUrl, ENT_QUOTES, "UTF-8");
+        $safeBaseURL = htmlspecialchars($this->reset_password_url, ENT_QUOTES , "UTF-8");
+        $safeToken = htmlspecialchars($token, ENT_QUOTES , "UTF-8");
+        $resetURL = $safeBaseURL . "?token=" . $safeToken;
 
         //Prepare html email message body
         $body = "
@@ -94,7 +95,7 @@ class UsersResetPasswordController extends BaseController
                 <div>
                     <p>
                         Hi, please click on the following reset password link below in order to reset your password account:
-                        <a href='{$safeUrl}' target='_blank'>{$safeUrl}</a>
+                        <a href='{$resetURL}' target='_blank'>{$resetURL}</a>
                     </p>
                     <p>
                         <h5>Thank You.</h5>
