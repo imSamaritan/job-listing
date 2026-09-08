@@ -91,10 +91,10 @@ class UsersResetPasswordController extends BaseController
         //Prepare html email message body
         $body = "
             <div>
-                <h2 color='red'>Password reset !</h2>
+                <h2 style='color:red'>Password reset !</h2>
                 <div>
                     <p>
-                        Hi, please click on the following reset password link below in order to reset your password account:
+                        <strong>Hi, please click on the following reset password link below in order to reset your password account:</strong>
                         <a href='{$resetURL}' target='_blank'>{$resetURL}</a>
                     </p>
                     <p>
