@@ -11,6 +11,8 @@ class MailService
 {
     public function __construct(
         private PHPMailer $mailer,
+        private string $host,
+        private int $port,
         private string $username,
         private string $password,
     ) {}
@@ -23,12 +25,12 @@ class MailService
     ): bool {
         try {
             $this->mailer->isSMTP();
-            $this->mailer->Host = "smtp.gmail.com";
+            $this->mailer->Host = $this->host;
             $this->mailer->SMTPAuth = true;
             $this->mailer->Username = $this->username;
             $this->mailer->Password = $this->password; // Google App Password
             $this->mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $this->mailer->Port = 587;
+            $this->mailer->Port = $this->port;
 
             $this->mailer->setFrom($this->username, $name);
             $this->mailer->addAddress($to);
@@ -40,6 +42,7 @@ class MailService
             $this->mailer->send();
             return true;
         } catch (Exception $e) {
+            error_log("Mail error : " . $e->getMessage());
             return false;
         }
     }
