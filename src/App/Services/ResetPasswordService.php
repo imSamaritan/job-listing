@@ -14,7 +14,7 @@ class ResetPasswordService
         private UserResetPasswordRepositoryInterface $userResetPasswordRepository,
     ) {}
 
-    public function getUserIdByEmail(string $email)
+    public function getUserIdByEmail(string $email): ?int
     {
         $user = $this->userRepository->getUserWithEmail($email);
         return $user["id"] ?? null;
