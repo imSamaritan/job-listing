@@ -9,7 +9,6 @@ use Dotenv\Dotenv;
 use Slim\Views\PhpRenderer;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\Psr7\Factory\ResponseFactory;
-use Psr\Container\ContainerInterface;
 use App\Interfaces\UserRepositoryInterface;
 use App\Interfaces\UserResetPasswordRepositoryInterface;
 use App\Repositories\Users\UserRepository;
@@ -23,15 +22,41 @@ use App\Services\MailService;
 use PHPMailer\PHPMailer\PHPMailer;
 
 $dotenv = Dotenv::createImmutable(ROOT_PATH);
-$dotenv->safeLoad();
+$dotenv->load();
+
+$dotenv->required([
+    "DB_HOST",
+    "DB_USER",
+    "DB_PASSWORD",
+    "DB_NAME",
+    "JWT_SECRET_KEY",
+    "JWT_ALGORITHM",
+    "USER_COOKIE_NAME",
+    "RESET_PASSWORD_HASH_ALGORITHM",
+    "RESET_PASSWORD_URL",
+    "MAIL_HOST",
+    "MAIL_PORT",
+    "MAIL_USERNAME",
+    "MAIL_PASSWORD",
+]);
+
+$db_host = $_ENV["DB_HOST"];
+$db_user = $_ENV["DB_USER"];
+$db_password = $_ENV["DB_PASSWORD"];
+$db_name = $_ENV["DB_NAME"];
+
+$jwt_secret_key = $_ENV["JWT_SECRET_KEY"];
+$jwt_algorithm = $_ENV["JWT_ALGORITHM"];
 
 $cookie_name = $_ENV["USER_COOKIE_NAME"];
+
+$reset_password_hash_algorithm = $_ENV["RESET_PASSWORD_HASH_ALGORITHM"];
 $reset_url = $_ENV["RESET_PASSWORD_URL"];
+
 $mail_host = $_ENV["MAIL_HOST"];
 $mail_port = (int) $_ENV["MAIL_PORT"];
 $mail_username = $_ENV["MAIL_USERNAME"];
 $mail_password = $_ENV["MAIL_PASSWORD"];
-
 
 return [
     ResponseFactoryInterface::class => DI\get(ResponseFactory::class),
@@ -42,13 +67,18 @@ return [
         UserPasswordResetRepository::class,
     ),
 
-    MailService::class => function(ContainerInterface $container) use ($mail_host, $mail_password, $mail_port, $mail_username) {
+    MailService::class => function () use (
+        $mail_host,
+        $mail_password,
+        $mail_port,
+        $mail_username,
+    ) {
         return new MailService(
             new PHPMailer(true),
             host: $mail_host,
             port: $mail_port,
             username: $mail_username,
-            password: $mail_password
+            password: $mail_password,
         );
     },
 
@@ -73,25 +103,25 @@ return [
         return $renderer;
     },
 
-    Database::class => function () {
+    Database::class => function () use ($db_host, $db_user, $db_password, $db_name) {
         return new Database(
-            host: $_ENV["DB_HOST"],
-            user: $_ENV["DB_USER"],
-            password: $_ENV["DB_PASSWORD"],
-            database: $_ENV["DB_NAME"],
+            host: $db_host,
+            user: $db_user,
+            password: $db_password,
+            database: $db_name,
         );
     },
 
-    AuthTokenUtils::class => function () {
+    AuthTokenUtils::class => function () use ($jwt_secret_key, $jwt_algorithm) {
         return new AuthTokenUtils(
-            secret_key: $_ENV["JWT_SECRET_KEY"],
-            algorithm: $_ENV["JWT_ALGORITHM"],
+            secret_key: $jwt_secret_key,
+            algorithm: $jwt_algorithm,
         );
     },
 
-    ResetPasswordTokenUtils::class => function () {
+    ResetPasswordTokenUtils::class => function () use ($reset_password_hash_algorithm) {
         return new ResetPasswordTokenUtils(
-            algorithm: $_ENV["RESET_PASSWORD_HASH_ALGORITHM"],
+            algorithm: $reset_password_hash_algorithm,
         );
     },
 ];
