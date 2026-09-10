@@ -27,8 +27,11 @@ $dotenv->safeLoad();
 
 $cookie_name = $_ENV["USER_COOKIE_NAME"];
 $reset_url = $_ENV["RESET_PASSWORD_URL"];
+$mail_host = $_ENV["MAIL_HOST"];
+$mail_port = (int) $_ENV["MAIL_PORT"];
 $mail_username = $_ENV["MAIL_USERNAME"];
 $mail_password = $_ENV["MAIL_PASSWORD"];
+
 
 return [
     ResponseFactoryInterface::class => DI\get(ResponseFactory::class),
@@ -39,9 +42,11 @@ return [
         UserPasswordResetRepository::class,
     ),
 
-    MailService::class => function(ContainerInterface $container) use ($mail_password, $mail_username) {
+    MailService::class => function(ContainerInterface $container) use ($mail_host, $mail_password, $mail_port, $mail_username) {
         return new MailService(
             $container->get(PHPMailer::class),
+            host: $mail_host,
+            port: $mail_port,
             username: $mail_username,
             password: $mail_password
         );
