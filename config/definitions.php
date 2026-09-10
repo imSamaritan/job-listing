@@ -44,7 +44,7 @@ return [
 
     MailService::class => function(ContainerInterface $container) use ($mail_host, $mail_password, $mail_port, $mail_username) {
         return new MailService(
-            $container->get(PHPMailer::class),
+            new PHPMailer(true),
             host: $mail_host,
             port: $mail_port,
             username: $mail_username,
