@@ -24,6 +24,7 @@ class MailService
         string $name = "Job Board",
     ): bool {
         try {
+            $this->mailer->clearAllRecipients();
             $this->mailer->isSMTP();
             $this->mailer->Host = $this->host;
             $this->mailer->SMTPAuth = true;
