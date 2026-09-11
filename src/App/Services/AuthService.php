@@ -18,12 +18,6 @@ class AuthService
 
     public function register(array $user): array|bool
     {
-        if ($user["role"] === "admin") {
-            $user["status"] = true;
-        } else {
-            $user["status"] = null;
-        }
-
         $user["password"] = password_hash(
             $user["password"],
             PASSWORD_DEFAULT,

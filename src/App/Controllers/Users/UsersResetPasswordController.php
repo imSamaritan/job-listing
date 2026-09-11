@@ -68,9 +68,7 @@ class UsersResetPasswordController extends BaseController
         $hashedToken = $this->resetTokenUtils->hashToken($token);
 
         // If any records exists, clear them
-        if ($this->resetPasswordService->checkRecordByUserId($userId)) {
-            $this->resetPasswordService->clearRecordByUserId($userId);
-        }
+        $this->resetPasswordService->clearRecordByUserId($userId);
 
         // Save currect reset password record [user_id, hashed_token]
         $save = $this->resetPasswordService->saveResetRecord([
@@ -84,9 +82,9 @@ class UsersResetPasswordController extends BaseController
         }
 
         //Reset password url
-        $safeBaseURL = htmlspecialchars($this->reset_password_url, ENT_QUOTES , "UTF-8");
-        $safeToken = htmlspecialchars($token, ENT_QUOTES , "UTF-8");
-        $resetURL = $safeBaseURL . "?token=" . $safeToken;
+        $token = rawurlencode($token);
+        $safeUrl = $this->reset_password_url . "?token=" . $token;
+        $resetUrl = htmlspecialchars($safeUrl, ENT_QUOTES, "UTF-8");
 
         //Prepare html email message body
         $body = "
@@ -95,7 +93,7 @@ class UsersResetPasswordController extends BaseController
                 <div>
                     <p>
                         <strong>Hi, please click on the following reset password link below in order to reset your password account:</strong>
-                        <a href='{$resetURL}' target='_blank'>{$resetURL}</a>
+                        <a href='{$resetUrl}' target='_blank'>{$resetUrl}</a>
                     </p>
                     <p>
                         <h5>Thank You.</h5>
