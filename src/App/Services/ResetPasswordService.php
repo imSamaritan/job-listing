@@ -16,8 +16,8 @@ class ResetPasswordService
 
     public function getUserIdByEmail(string $email): ?int
     {
-        $user = $this->userRepository->getUserWithEmail($email);
-        return $user["id"] ?? null;
+        $user = $this->userRepository->findByEmail($email);
+        return (int) $user->id ?? null;
     }
 
     public function saveResetRecord(array $records): bool

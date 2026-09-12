@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories\Users;
 
+use App\Entities\User;
 use PDOException;
 use App\Helper\Helper;
 use App\Interfaces\UserRepositoryInterface;
@@ -38,7 +39,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         }
     }
 
-    public function getUserWithEmail(string $user_email): array|bool
+    public function findByEmail(string $user_email): ?User
     {
         $allowedSelectedFields = Helper::GET_USER_SELECTED_FIELDS;
         $fields = array_keys(array_flip($allowedSelectedFields));
@@ -48,9 +49,17 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         $statement = $this->getConnection()->prepare($sql);
 
         if ($statement->execute([$user_email])) {
-            return $statement->fetch();
+            $user = $statement->fetch();
+            return new User(
+                id:  (int)$user["id"],
+                name: $user["name"],
+                email: $user["email"],
+                role: $user["role"],
+                location: $user["location"],
+                password: $user["password"]
+            );
         }
 
-        return false;
+        return null;
     }
 }
