@@ -5,20 +5,14 @@ declare(strict_types=1);
 namespace App\Repositories\Users;
 
 use PDO;
-use App\Database;
-use App\Interfaces\UserResetPasswordRepositoryInterface;
 use PDOException;
+use App\Interfaces\UserResetPasswordRepositoryInterface;
+use App\Repositories\BaseRepository;
 
-class UserPasswordResetRepository implements
+class UserPasswordResetRepository extends BaseRepository implements
     UserResetPasswordRepositoryInterface
 {
-    private ?string $table = "password_reset";
-    private PDO $dbConnection;
-
-    public function __construct(private Database $database)
-    {
-        $this->dbConnection = $this->database->connect();
-    }
+    protected ?string $table = "password_reset";
 
     public function save(array $records): bool
     {
@@ -29,10 +23,10 @@ class UserPasswordResetRepository implements
             $sql = "INSERT INTO {$this->table} (user_id, hashed_token, expiry_date)
                     VALUES(?, ?, DATE_ADD(NOW(), INTERVAL 15 MINUTE));";
 
-            $statement = $this->dbConnection->prepare($sql);
+            $statement = $this->getConnection()->prepare($sql);
             $statement->bindValue(1, $id, PDO::PARAM_INT);
             $statement->bindValue(2, $hashedToken, PDO::PARAM_STR);
-            
+
             return $statement->execute();
         } catch (PDOException $error) {
             return false;
@@ -42,7 +36,7 @@ class UserPasswordResetRepository implements
     public function checkRecordById(int $userId): bool
     {
         $sql = "SELECT hashed_token FROM {$this->table} WHERE user_id = ?";
-        $statement = $this->dbConnection->prepare($sql);
+        $statement = $this->getConnection()->prepare($sql);
         $statement->bindValue(1, $userId, PDO::PARAM_INT);
         $exec = $statement->execute();
 
@@ -60,7 +54,7 @@ class UserPasswordResetRepository implements
     public function clear(int $userId): bool
     {
         $sql = "DELETE FROM {$this->table} WHERE user_id = ?";
-        $statement = $this->dbConnection->prepare($sql);
+        $statement = $this->getConnection()->prepare($sql);
         $statement->bindValue(1, $userId, PDO::PARAM_INT);
         return $statement->execute();
     }

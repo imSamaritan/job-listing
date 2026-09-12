@@ -4,26 +4,22 @@ declare(strict_types=1);
 
 namespace App\Repositories\Users;
 
-use PDO;
 use PDOException;
-use App\Database;
-use App\Interfaces\UserRepositoryInterface;
 use App\Helper\Helper;
+use App\Interfaces\UserRepositoryInterface;
+use App\Repositories\BaseRepository;
 
-class UserRepository implements UserRepositoryInterface
+class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
-    private ?string $table = "users";
-    private PDO $dbConnection;
-
-    public function __construct(private Database $database)
-    {
-        $this->dbConnection = $this->database->connect();
-    }
+    protected ?string $table = "users";
 
     public function createUser(array $user): array|bool
     {
         try {
-            $user = array_intersect_key($user, array_flip(Helper::INSERT_USER_ALLOWED_FIELDS));
+            $user = array_intersect_key(
+                $user,
+                array_flip(Helper::INSERT_USER_ALLOWED_FIELDS),
+            );
             $fields = array_keys($user);
             $columns = implode(",", $fields);
 
@@ -32,7 +28,7 @@ class UserRepository implements UserRepositoryInterface
 
             $sql = "INSERT INTO {$this->table} ({$columns}) VALUES({$placeholders})";
 
-            $statement = $this->dbConnection->prepare($sql);
+            $statement = $this->getConnection()->prepare($sql);
             return $statement->execute($user);
         } catch (PDOException $e) {
             return array_intersect_key(
@@ -49,7 +45,7 @@ class UserRepository implements UserRepositoryInterface
         $fields = implode(", ", $fields);
 
         $sql = "SELECT {$fields} FROM {$this->table} WHERE email = ?;";
-        $statement = $this->dbConnection->prepare($sql);
+        $statement = $this->getConnection()->prepare($sql);
 
         if ($statement->execute([$user_email])) {
             return $statement->fetch();
