@@ -11,6 +11,7 @@ abstract class BaseRepository
 {
     protected ?string $table;
     public function __construct(private Database $database) {}
+
     final protected function getConnection(): PDO
     {
         return $this->database->connect();

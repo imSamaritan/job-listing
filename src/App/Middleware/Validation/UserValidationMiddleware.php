@@ -10,6 +10,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Psr\Http\Server\MiddlewareInterface;
 use App\Helper\Helper;
+use App\DTOs\RegistrationInput;
 
 class UserValidationMiddleware implements MiddlewareInterface
 {
@@ -90,7 +91,16 @@ class UserValidationMiddleware implements MiddlewareInterface
             return $response->withStatus($errors[0]["code"]);
         }
 
-        $request = $request->withAttribute("userData", $userData);
+        $userRegistrationInputObj = new RegistrationInput(
+            name: $userData["name"],
+            email: $userData["email"],
+            password: $userData["password"],
+            confirm_password: $userData["confirm_password"],
+            role: $userData["role"],
+            location: $userData["location"]
+        );
+        
+        $request = $request->withAttribute("userRegistrationInputObj", $userRegistrationInputObj);
         return $requestHandler->handle($request);
     }
 }
