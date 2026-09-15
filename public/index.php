@@ -6,6 +6,7 @@ use Slim\Factory\AppFactory;
 use DI\ContainerBuilder;
 use App\Middleware\JsonResponseHeaderMiddleware;
 use App\Controllers\Home\HomeController;
+use App\Controllers\Users\RegistrationController;
 use App\Controllers\Users\UsersController;
 use App\Controllers\Users\UsersDashboardController;
 use App\Controllers\Users\UsersResetPasswordController;
@@ -33,7 +34,7 @@ $app->addBodyParsingMiddleware();
 
 $app->get("/", HomeController::class);
 $app->get("/login", UsersController::class . ":loginIndex");
-$app->get("/register", UsersController::class . ":registerIndex");
+$app->get("/register", RegistrationController::class . ":index");
 
 $app->get("/dashboard", UsersDashboardController::class . ":index")
     ->add(AuthMiddleware::class);
@@ -43,7 +44,7 @@ $app->get("/password/reset", UsersResetPasswordController::class . ":resetIndex"
 
 // ----API----
 
-$app->post("/api/create", UsersController::class . ":register")
+$app->post("/api/create", RegistrationController::class . ":register")
     ->add(UserValidationMiddleware::class)
     ->add(JsonResponseHeaderMiddleware::class);
 
