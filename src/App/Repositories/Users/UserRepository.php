@@ -9,33 +9,40 @@ use PDOException;
 use App\Helper\Helper;
 use App\Interfaces\UserRepositoryInterface;
 use App\Repositories\BaseRepository;
+use App\DTOs\RegistrationInput;
 
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
     protected ?string $table = "users";
 
-    public function createUser(array $user): array|bool
+    public function create(RegistrationInput $userRegistrationInputObj): array
     {
+        $input = $userRegistrationInputObj->getInputAsArray();
+        $inputKeys = array_keys($input);
+
+        $fields = implode(", ", $inputKeys);
+        $placeholders = implode(", ", array_map(fn(string $field) => ":{$field}", $inputKeys));
+
         try {
-            $user = array_intersect_key(
-                $user,
-                array_flip(Helper::INSERT_USER_ALLOWED_FIELDS),
-            );
-            $fields = array_keys($user);
-            $columns = implode(",", $fields);
-
-            $fieldsPlaceholders = array_map(fn($field) => ":{$field}", $fields);
-            $placeholders = implode(",", $fieldsPlaceholders);
-
-            $sql = "INSERT INTO {$this->table} ({$columns}) VALUES({$placeholders})";
-
+            $sql = "INSERT INTO {$this->table} ({$fields}) VALUES ($placeholders);";
             $statement = $this->getConnection()->prepare($sql);
-            return $statement->execute($user);
+
+            if ($statement->execute($input)) {
+                return ["status" => true, "code" => 201];
+            }
+
+            return ["status" => false, "code" => 500];
         } catch (PDOException $e) {
-            return array_intersect_key(
-                Helper::CREATE_USER_VALIDATION_SCHEMA[0],
-                array_flip(["code", "field", "message"]),
-            );
+            //Duplicate email error
+            $sqlCode = $e->errorInfo[0] ?? null;
+            $driverCode = $e->errorInfo[1] ?? null;
+            
+            if ($sqlCode === "23000" && $driverCode === 1062) {
+                return ["status" => false, "code" => 409];
+            }
+
+            error_log("User registration failed: " . $e->getMessage());
+            return ["status" => false, "code" => 500];
         }
     }
 
@@ -51,12 +58,12 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         if ($statement->execute([$user_email])) {
             $user = $statement->fetch();
             return new User(
-                id:  (int)$user["id"],
+                id: (int) $user["id"],
                 name: $user["name"],
                 email: $user["email"],
                 role: $user["role"],
                 location: $user["location"],
-                password: $user["password"]
+                password: $user["password"],
             );
         }
 

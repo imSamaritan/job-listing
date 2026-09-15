@@ -7,23 +7,19 @@ namespace App\Services;
 use App\Interfaces\UserRepositoryInterface;
 use App\Utilities\AuthTokenUtils;
 use App\Helper\Helper;
+use App\DTOs\RegistrationInput;
 
 class AuthService
 {
     public function __construct(
         private UserRepositoryInterface $userRepository,
         private AuthTokenUtils $authTokenUtils,
-    ) {
-    }
+    ) {}
 
-    public function register(array $user): array|bool
+    public function register(RegistrationInput $userRegistrationInputObj): array
     {
-        $user["password"] = password_hash(
-            $user["password"],
-            PASSWORD_DEFAULT,
-        );
-
-        return $this->userRepository->createUser($user);
+        $userRegistrationInputObj->hashPassword();
+        return $this->userRepository->create($userRegistrationInputObj);
     }
 
     public function login(array $user): array
@@ -57,7 +53,7 @@ class AuthService
 
     private function getUserPayload(string $email): array
     {
-        $user = $this->userRepository->getUserWithEmail($email);
+        $user = $this->userRepository->findByEmail($email);
 
         if (!$user) {
             return [

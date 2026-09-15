@@ -17,13 +17,15 @@ class UsersController extends BaseController
         private AuthService $authService,
         private Cookie $cookie,
         private PhpRenderer $php_renderer,
-        private string $cookie_name
+        private string $cookie_name,
     ) {
         parent::__construct($php_renderer);
     }
 
-    public function registerIndex(Request $request, Response $response): Response
-    {
+    public function registerIndex(
+        Request $request,
+        Response $response,
+    ): Response {
         return $this->render($response, "Users/Register.phtml", [
             "title" => "Create Account",
         ]);
@@ -31,15 +33,27 @@ class UsersController extends BaseController
 
     public function register(Request $request, Response $response): Response
     {
-        $userData = $request->getAttribute("userData");
-        $res = $this->authService->register($userData);
+        $userRegistrationInputObj = $request->getAttribute("userRegistrationInputObj");
+        $createUser = $this->authService->register($userRegistrationInputObj);
 
-        if ($res === true) {
-            $res = ["status" => true];
+        if ($createUser["status"] === false) {
+            $message = match ($createUser["code"]) {
+                409 => "User email address already exists!",
+                default => "User account can not be created!",
+            };
+
+            return $this->response(
+                $response,
+                ["message" => $message],
+                $createUser["code"],
+            );
         }
 
-        $response->getBody()->write(json_encode($res));
-        return $response;
+        return $this->response(
+            $response,
+            ["message" => "User account created successfully!"],
+            $createUser["code"],
+        );
     }
 
     public function loginIndex(Request $request, Response $response): Response

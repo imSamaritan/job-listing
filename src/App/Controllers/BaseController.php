@@ -13,11 +13,19 @@ abstract class BaseController
     {
     }
 
-    public function render(
+    protected function render(
         Response $response_object,
         string $view_path,
         array $data = [],
     ): Response {
         return $this->php_renderer->render($response_object, $view_path, $data);
     }
+
+    protected function response(Response $response, array $data, int $status): Response
+    {
+        $response->getBody()->write(json_encode($data));
+        return $response->withStatus($status);
+    }
+
+    
 }
