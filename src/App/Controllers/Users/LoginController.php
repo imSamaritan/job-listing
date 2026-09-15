@@ -11,7 +11,7 @@ use Slim\Views\PhpRenderer;
 use App\Services\AuthService;
 use Asamaritan\Cookie\Cookie;
 
-class UsersController extends BaseController
+class LoginController extends BaseController
 {
     public function __construct(
         private AuthService $authService,
@@ -22,41 +22,7 @@ class UsersController extends BaseController
         parent::__construct($php_renderer);
     }
 
-    public function registerIndex(
-        Request $request,
-        Response $response,
-    ): Response {
-        return $this->render($response, "Users/Register.phtml", [
-            "title" => "Create Account",
-        ]);
-    }
-
-    public function register(Request $request, Response $response): Response
-    {
-        $userRegistrationInputObj = $request->getAttribute("userRegistrationInputObj");
-        $createUser = $this->authService->register($userRegistrationInputObj);
-
-        if ($createUser["status"] === false) {
-            $message = match ($createUser["code"]) {
-                409 => "User email address already exists!",
-                default => "User account can not be created!",
-            };
-
-            return $this->response(
-                $response,
-                ["message" => $message],
-                $createUser["code"],
-            );
-        }
-
-        return $this->response(
-            $response,
-            ["message" => "User account created successfully!"],
-            $createUser["code"],
-        );
-    }
-
-    public function loginIndex(Request $request, Response $response): Response
+    public function index(Request $request, Response $response): Response
     {
         return $this->render($response, "Users/Login.phtml", [
             "title" => "Login",

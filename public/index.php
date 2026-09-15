@@ -7,7 +7,7 @@ use DI\ContainerBuilder;
 use App\Middleware\JsonResponseHeaderMiddleware;
 use App\Controllers\Home\HomeController;
 use App\Controllers\Users\RegistrationController;
-use App\Controllers\Users\UsersController;
+use App\Controllers\Users\LoginController;
 use App\Controllers\Users\UsersDashboardController;
 use App\Controllers\Users\UsersResetPasswordController;
 use App\Middleware\Validation\UserValidationMiddleware;
@@ -33,7 +33,7 @@ $handler->forceContentType("application/json");
 $app->addBodyParsingMiddleware();
 
 $app->get("/", HomeController::class);
-$app->get("/login", UsersController::class . ":loginIndex");
+$app->get("/login", LoginController::class . ":index");
 $app->get("/register", RegistrationController::class . ":index");
 
 $app->get("/dashboard", UsersDashboardController::class . ":index")
@@ -48,7 +48,7 @@ $app->post("/api/create", RegistrationController::class . ":register")
     ->add(UserValidationMiddleware::class)
     ->add(JsonResponseHeaderMiddleware::class);
 
-$app->post("/api/auth", UsersController::class . ":login")
+$app->post("/api/auth", LoginController::class . ":login")
     ->add(UserValidationMiddleware::class)
     ->add(JsonResponseHeaderMiddleware::class);
 
