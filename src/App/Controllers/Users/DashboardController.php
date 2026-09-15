@@ -9,7 +9,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Views\PhpRenderer;
 
-class UsersDashboardController extends BaseController
+class DashboardController extends BaseController
 {
     public function __construct(private PhpRenderer $php_renderer)
     {

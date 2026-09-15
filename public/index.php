@@ -8,8 +8,8 @@ use App\Middleware\JsonResponseHeaderMiddleware;
 use App\Controllers\Home\HomeController;
 use App\Controllers\Users\RegistrationController;
 use App\Controllers\Users\LoginController;
-use App\Controllers\Users\UsersDashboardController;
-use App\Controllers\Users\UsersResetPasswordController;
+use App\Controllers\Users\DashboardController;
+use App\Controllers\Users\ResetPasswordController;
 use App\Middleware\Validation\UserValidationMiddleware;
 use App\Middleware\Validation\UserEmailValidationMiddleware;
 use App\Middleware\Auth\AuthMiddleware;
@@ -36,11 +36,11 @@ $app->get("/", HomeController::class);
 $app->get("/login", LoginController::class . ":index");
 $app->get("/register", RegistrationController::class . ":index");
 
-$app->get("/dashboard", UsersDashboardController::class . ":index")
+$app->get("/dashboard", DashboardController::class . ":index")
     ->add(AuthMiddleware::class);
 
-$app->get("/reset/password", UsersResetPasswordController::class . ":index");
-$app->get("/password/reset", UsersResetPasswordController::class . ":resetIndex");
+$app->get("/reset/password", ResetPasswordController::class . ":index");
+$app->get("/password/reset", ResetPasswordController::class . ":resetIndex");
 
 // ----API----
 
@@ -52,7 +52,7 @@ $app->post("/api/auth", LoginController::class . ":login")
     ->add(UserValidationMiddleware::class)
     ->add(JsonResponseHeaderMiddleware::class);
 
-$app->post("/api/reset/password", UsersResetPasswordController::class . ":request")
+$app->post("/api/reset/password", ResetPasswordController::class . ":request")
     ->add(UserEmailValidationMiddleware::class)
     ->add(JsonResponseHeaderMiddleware::class);
 
