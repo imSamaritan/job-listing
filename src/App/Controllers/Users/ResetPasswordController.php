@@ -12,7 +12,7 @@ use App\Services\MailService;
 use App\Utilities\ResetPasswordTokenUtils;
 use Slim\Views\PhpRenderer;
 
-class UsersResetPasswordController extends BaseController
+class ResetPasswordController extends BaseController
 {
     public function __construct(
         private PhpRenderer $php_renderer,
