@@ -21,7 +21,10 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         $inputKeys = array_keys($input);
 
         $fields = implode(", ", $inputKeys);
-        $placeholders = implode(", ", array_map(fn(string $field) => ":{$field}", $inputKeys));
+        $placeholders = implode(
+            ", ",
+            array_map(fn(string $field) => ":{$field}", $inputKeys),
+        );
 
         try {
             $sql = "INSERT INTO {$this->table} ({$fields}) VALUES ($placeholders);";
@@ -36,7 +39,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             //Duplicate email error
             $sqlCode = $e->errorInfo[0] ?? null;
             $driverCode = $e->errorInfo[1] ?? null;
-            
+
             if ($sqlCode === "23000" && $driverCode === 1062) {
                 return ["status" => false, "code" => 409];
             }
@@ -48,7 +51,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     public function findByEmail(string $user_email): ?User
     {
-        $allowedSelectedFields = Helper::GET_USER_SELECTED_FIELDS;
+        $allowedSelectedFields = User::schema();
         $fields = array_keys(array_flip($allowedSelectedFields));
         $fields = implode(", ", $fields);
 
