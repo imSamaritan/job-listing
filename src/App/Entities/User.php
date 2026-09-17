@@ -19,4 +19,9 @@ class User
     {
         return ["id", "name", "email", "role", "location", "password"];
     }
+
+    public function hashedPassword(): string
+    {
+        return $this->password;
+    }
 }

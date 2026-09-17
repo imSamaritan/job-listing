@@ -11,6 +11,7 @@ use App\Controllers\Users\LoginController;
 use App\Controllers\Users\DashboardController;
 use App\Controllers\Users\ResetPasswordController;
 use App\Middleware\Validation\RegisterValidationMiddleware;
+use App\Middleware\Validation\LoginValidationMiddleware;
 use App\Middleware\Validation\UserEmailValidationMiddleware;
 use App\Middleware\Auth\AuthMiddleware;
 
@@ -49,6 +50,7 @@ $app->post("/api/create", RegisterController::class . ":register")
     ->add(JsonResponseHeaderMiddleware::class);
 
 $app->post("/api/auth", LoginController::class . ":login")
+    ->add(LoginValidationMiddleware::class)
     ->add(JsonResponseHeaderMiddleware::class);
 
 $app->post("/api/reset/password", ResetPasswordController::class . ":request")

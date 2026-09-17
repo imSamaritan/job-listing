@@ -31,26 +31,25 @@ class LoginController extends BaseController
 
     public function login(Request $request, Response $response): Response
     {
-        $userData = $request->getAttribute("userData");
-        $userResponse = $this->userService->login($userData);
+        $loginInputObj = $request->getAttribute("loginInputObj");
+        $loginResults = $this->userService->login($loginInputObj);
 
-        if ($this->cookie->find($this->cookie_name)) {
-            $this->cookie->remove($this->cookie_name);
+        if (!$loginResults->success) {
+            return $this->response($response, ["message" => $loginResults->message], $loginResults->code);
         }
 
-        #Create 1 hour cookie, if user response contains a token
-        if (isset($userResponse["token"])) {
-            $this->cookie
-                ->name($this->cookie_name)
-                ->value($userResponse["token"])
-                ->expires(3600)
-                ->secure(false)
-                ->httponly(true)
-                ->create();
-            $userResponse = ["status" => true];
-        }
+        //Clean preview existing cookie under a same name
+        $this->cookie->remove($this->cookie_name);
 
-        $response->getBody()->write(json_encode($userResponse));
-        return $response;
+        $this->cookie
+            ->name($this->cookie_name)
+            ->value($loginResults->token)
+            ->expires(3600)
+            ->secure(false)
+            ->httponly(true)
+            ->create();
+
+        $successMessage = ["status" => true, "role" => $loginResults->role];
+        return $this->response($response, $successMessage, $loginResults->code);
     }
 }

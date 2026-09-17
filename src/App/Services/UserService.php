@@ -7,6 +7,8 @@ namespace App\Services;
 use App\Interfaces\UserRepositoryInterface;
 use App\Utilities\AuthTokenUtils;
 use App\DTOs\RegisterInput;
+use App\DTOs\LoginInput;
+use App\Results\LoginResults;
 
 class UserService
 {
@@ -21,55 +23,26 @@ class UserService
         return $this->userRepository->create($userRegisterInputObj);
     }
 
-    public function login(array $user): array
+    public function login(LoginInput $loginInputObj): LoginResults
     {
-        $userPayloadRequest = $this->getUserPayload($user["email"]);
-        $payload = $userPayloadRequest["payload"];
-        $payloadError = $userPayloadRequest["error"];
+        $userObj = $this->userRepository->findByEmail($loginInputObj->email);
 
-        if ($payloadError != null) {
-            return $payloadError;
+        if ($userObj === null) {
+           return LoginResults::failure("Invalid password or email!", 401); 
         }
-
-        $payloadHashedPassword = $payload["password"];
+        
+        $payload = [ "id" => $userObj->id, "role" => $userObj->role];
+        
         $verifyPassword = password_verify(
-            $user["password"],
-            $payloadHashedPassword,
+            $loginInputObj->password,
+            $userObj->hashedPassword(),
         );
 
         if ($verifyPassword === false) {
-            return [
-                "code" => Helper::AUTH_USER_VALIDATION_SCHEMA[1]["code"],
-                ...Helper::AUTH_USER_VALIDATION_SCHEMA[1]["asset"],
-            ];
+            return LoginResults::failure("Invalid password or email!", 401);
         }
 
-        unset($payload["password"]);
         $token = $this->authTokenUtils->generateToken($payload);
-
-        return ["token" => $token];
-    }
-
-    private function getUserPayload(string $email): array
-    {
-        $user = $this->userRepository->findByEmail($email);
-
-        if (!$user) {
-            return [
-                "error" => [
-                    "code" => Helper::AUTH_USER_VALIDATION_SCHEMA[0]["code"],
-                    ...Helper::AUTH_USER_VALIDATION_SCHEMA[0]["asset"],
-                ],
-                "payload" => null,
-            ];
-        }
-
-        return [
-            "error" => null,
-            "payload" => array_intersect_key(
-                $user,
-                array_flip(Helper::USER_PAYLOAD_SELECTED_FIELDS),
-            ),
-        ];
+        return LoginResults::success($token, $userObj->role);
     }
 }
