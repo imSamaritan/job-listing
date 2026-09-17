@@ -9,9 +9,9 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Psr\Http\Server\MiddlewareInterface;
-use App\DTOs\RegistrationInput;
+use App\DTOs\RegisterInput;
 
-class RegistrationValidationMiddleware implements MiddlewareInterface
+class RegisterValidationMiddleware implements MiddlewareInterface
 {
     public function __construct(private ResponseFactoryInterface $responseFactory) {}
 
@@ -48,7 +48,7 @@ class RegistrationValidationMiddleware implements MiddlewareInterface
             return $this->response($response, "Location name must be at least 5 characters long!", 400);
         }
 
-        $userRegistrationInputObj = new RegistrationInput(
+        $userRegisterInputObj = new RegisterInput(
             name: $input["name"],
             email: $input["email"],
             password: $input["password"],
@@ -58,8 +58,8 @@ class RegistrationValidationMiddleware implements MiddlewareInterface
         );
 
         $request = $request->withAttribute(
-            "userRegistrationInputObj",
-            $userRegistrationInputObj,
+            "userRegisterInputObj",
+            $userRegisterInputObj,
         );
         return $requestHandler->handle($request);
     }

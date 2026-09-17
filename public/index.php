@@ -6,11 +6,11 @@ use Slim\Factory\AppFactory;
 use DI\ContainerBuilder;
 use App\Middleware\JsonResponseHeaderMiddleware;
 use App\Controllers\Home\HomeController;
-use App\Controllers\Users\RegistrationController;
+use App\Controllers\Users\RegisterController;
 use App\Controllers\Users\LoginController;
 use App\Controllers\Users\DashboardController;
 use App\Controllers\Users\ResetPasswordController;
-use App\Middleware\Validation\RegistrationValidationMiddleware;
+use App\Middleware\Validation\RegisterValidationMiddleware;
 use App\Middleware\Validation\UserEmailValidationMiddleware;
 use App\Middleware\Auth\AuthMiddleware;
 
@@ -34,7 +34,7 @@ $app->addBodyParsingMiddleware();
 
 $app->get("/", HomeController::class);
 $app->get("/login", LoginController::class . ":index");
-$app->get("/register", RegistrationController::class . ":index");
+$app->get("/register", RegisterController::class . ":index");
 
 $app->get("/dashboard", DashboardController::class . ":index")
     ->add(AuthMiddleware::class);
@@ -44,8 +44,8 @@ $app->get("/password/reset", ResetPasswordController::class . ":resetIndex");
 
 // ----API----
 
-$app->post("/api/create", RegistrationController::class . ":register")
-    ->add(RegistrationValidationMiddleware::class)
+$app->post("/api/create", RegisterController::class . ":register")
+    ->add(RegisterValidationMiddleware::class)
     ->add(JsonResponseHeaderMiddleware::class);
 
 $app->post("/api/auth", LoginController::class . ":login")

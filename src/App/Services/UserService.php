@@ -6,20 +6,19 @@ namespace App\Services;
 
 use App\Interfaces\UserRepositoryInterface;
 use App\Utilities\AuthTokenUtils;
-use App\Helper\Helper;
-use App\DTOs\RegistrationInput;
+use App\DTOs\RegisterInput;
 
-class AuthService
+class UserService
 {
     public function __construct(
         private UserRepositoryInterface $userRepository,
         private AuthTokenUtils $authTokenUtils,
     ) {}
 
-    public function register(RegistrationInput $userRegistrationInputObj): array
+    public function register(RegisterInput $userRegisterInputObj): array
     {
-        $userRegistrationInputObj->hashPassword();
-        return $this->userRepository->create($userRegistrationInputObj);
+        $userRegisterInputObj->hashPassword();
+        return $this->userRepository->create($userRegisterInputObj);
     }
 
     public function login(array $user): array
