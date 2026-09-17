@@ -51,13 +51,15 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     public function findByEmail(string $user_email): ?User
     {
-        $fields = array_keys(array_flip(User::schema()));
-        $fields = implode(", ", $fields);
-
+        $fields = implode(", ", User::schema());
         $sql = "SELECT {$fields} FROM {$this->table} WHERE email = ?;";
         $statement = $this->getConnection()->prepare($sql);
 
         if ($statement->execute([$user_email])) {
+            if ($statement->rowCount() < 1) {
+                return null;
+            }
+            
             $user = $statement->fetch();
             return new User(
                 id: (int) $user["id"],
