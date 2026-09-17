@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\DTOs;
 
-class RegistrationInput
+class RegisterInput
 {
     private bool $isPasswordHashed = false;
     public function __construct(

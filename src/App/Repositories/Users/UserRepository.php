@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace App\Repositories\Users;
 
-use App\Entities\User;
-use PDOException;
-use App\Helper\Helper;
+
 use App\Interfaces\UserRepositoryInterface;
 use App\Repositories\BaseRepository;
-use App\DTOs\RegistrationInput;
+use PDOException;
+use App\Entities\User;
+use App\DTOs\RegisterInput;
 
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
     protected ?string $table = "users";
 
-    public function create(RegistrationInput $userRegistrationInputObj): array
+    public function create(RegisterInput $userRegisterInputObj): array
     {
-        $input = $userRegistrationInputObj->getInputAsArray();
+        $input = $userRegisterInputObj->getInputAsArray();
         $inputKeys = array_keys($input);
 
         $fields = implode(", ", $inputKeys);
@@ -51,8 +51,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     public function findByEmail(string $user_email): ?User
     {
-        $allowedSelectedFields = User::schema();
-        $fields = array_keys(array_flip($allowedSelectedFields));
+        $fields = array_keys(array_flip(User::schema()));
         $fields = implode(", ", $fields);
 
         $sql = "SELECT {$fields} FROM {$this->table} WHERE email = ?;";

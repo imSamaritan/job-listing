@@ -8,12 +8,12 @@ use App\Controllers\BaseController;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Views\PhpRenderer;
-use App\Services\AuthService;
+use App\Services\UserService;
 
-class RegistrationController extends BaseController
+class RegisterController extends BaseController
 {
     public function __construct(
-        private AuthService $authService,
+        private UserService $userService,
         private PhpRenderer $php_renderer,
     ) {
         parent::__construct($php_renderer);
@@ -28,14 +28,14 @@ class RegistrationController extends BaseController
 
     public function register(Request $request, Response $response): Response
     {
-        $userRegistrationInputObj = $request->getAttribute(
-            "userRegistrationInputObj",
+        $userRegisterInputObj = $request->getAttribute(
+            "userRegisterInputObj",
         );
-        $createUser = $this->authService->register($userRegistrationInputObj);
+        $createUser = $this->userService->register($userRegisterInputObj);
 
         if ($createUser["status"] === false) {
             $message = match ($createUser["code"]) {
-                409 => "User email address already exists!",
+                409 => "Unable to complete registration. If you already have an account, try logging in.",
                 default => "User account can not be created!",
             };
 

@@ -8,13 +8,13 @@ use App\Controllers\BaseController;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Views\PhpRenderer;
-use App\Services\AuthService;
+use App\Services\UserService;
 use Asamaritan\Cookie\Cookie;
 
 class LoginController extends BaseController
 {
     public function __construct(
-        private AuthService $authService,
+        private UserService $userService,
         private Cookie $cookie,
         private PhpRenderer $php_renderer,
         private string $cookie_name,
@@ -32,7 +32,7 @@ class LoginController extends BaseController
     public function login(Request $request, Response $response): Response
     {
         $userData = $request->getAttribute("userData");
-        $userResponse = $this->authService->login($userData);
+        $userResponse = $this->userService->login($userData);
 
         if ($this->cookie->find($this->cookie_name)) {
             $this->cookie->remove($this->cookie_name);
