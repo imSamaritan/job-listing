@@ -15,8 +15,8 @@ class User
         private string $password,
     ) {}
 
-    final public function password(): string
+    public static function schema(): array
     {
-        return $this->password;
+        return ["id", "name", "email", "role", "location", "password"];
     }
 }

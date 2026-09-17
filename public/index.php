@@ -10,7 +10,7 @@ use App\Controllers\Users\RegistrationController;
 use App\Controllers\Users\LoginController;
 use App\Controllers\Users\DashboardController;
 use App\Controllers\Users\ResetPasswordController;
-use App\Middleware\Validation\UserValidationMiddleware;
+use App\Middleware\Validation\RegistrationValidationMiddleware;
 use App\Middleware\Validation\UserEmailValidationMiddleware;
 use App\Middleware\Auth\AuthMiddleware;
 
@@ -45,11 +45,10 @@ $app->get("/password/reset", ResetPasswordController::class . ":resetIndex");
 // ----API----
 
 $app->post("/api/create", RegistrationController::class . ":register")
-    ->add(UserValidationMiddleware::class)
+    ->add(RegistrationValidationMiddleware::class)
     ->add(JsonResponseHeaderMiddleware::class);
 
 $app->post("/api/auth", LoginController::class . ":login")
-    ->add(UserValidationMiddleware::class)
     ->add(JsonResponseHeaderMiddleware::class);
 
 $app->post("/api/reset/password", ResetPasswordController::class . ":request")
