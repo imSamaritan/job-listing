@@ -9,6 +9,7 @@ use App\Controllers\Home\HomeController;
 use App\Controllers\Users\RegisterController;
 use App\Controllers\Users\LoginController;
 use App\Controllers\Users\DashboardController;
+use App\Controllers\Users\RequestResetPasswordController;
 use App\Controllers\Users\ResetPasswordController;
 use App\Middleware\Validation\RegisterValidationMiddleware;
 use App\Middleware\Validation\LoginValidationMiddleware;
@@ -40,8 +41,8 @@ $app->get("/register", RegisterController::class . ":index");
 $app->get("/dashboard", DashboardController::class . ":index")
     ->add(AuthMiddleware::class);
 
-$app->get("/reset/password", ResetPasswordController::class . ":index");
-$app->get("/password/reset", ResetPasswordController::class . ":resetIndex");
+$app->get("/reset/password", RequestResetPasswordController::class . ":index");
+$app->get("/password/reset", ResetPasswordController::class . ":index");
 
 // ----API----
 
@@ -53,7 +54,7 @@ $app->post("/api/auth", LoginController::class . ":login")
     ->add(LoginValidationMiddleware::class)
     ->add(JsonResponseHeaderMiddleware::class);
 
-$app->post("/api/reset/password", ResetPasswordController::class . ":request")
+$app->post("/api/reset/password", RequestResetPasswordController::class . ":request")
     ->add(UserEmailValidationMiddleware::class)
     ->add(JsonResponseHeaderMiddleware::class);
 
