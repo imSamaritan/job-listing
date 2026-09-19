@@ -36,7 +36,7 @@ class RegisterValidationMiddleware implements MiddlewareInterface
             return $this->response($response, "Invalid email address!", 400);
         }
 
-        if (!isset($input["password"]) || !preg_match("#^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{10,64}$#", $input["password"])) {
+        if (!isset($input["password"]) || !preg_match("#^(?=.{10,64})(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s])$#", $input["password"])) {
             return $this->response($response, "Your password is not accepted!", 400);
         }
 
@@ -48,7 +48,7 @@ class RegisterValidationMiddleware implements MiddlewareInterface
             return $this->response($response, "Invalid role", 400);
         }
 
-        if (!isset($input["location"]) || !preg_match("#^[a-zA-Z\s]{5,30}$#", $input["location"])) {
+        if (!isset($input["location"]) || !preg_match("#^(?=.{5,30}$)(?:[a-zA-Z]+)(?:\s[a-zA-Z]+)?$#", $input["location"])) {
             return $this->response($response, "Location name must be at least 5 characters long!", 400);
         }
 
