@@ -27,6 +27,8 @@ class RegisterValidationMiddleware implements MiddlewareInterface
         if (!is_array($input) || empty($input)) {
             return $this->response($response, "Invalid or empty request payload!", 400);
         }
+
+        $input["email"] = isset($input["email"]) ? strtolower(trim($input["email"])) : "";
         
         if (!isset($input["name"]) || !preg_match("#^[a-zA-Z0-9_.-]{5,30}$#", $input["name"])) {
             return $this->response($response, "Username must be 5 or more characters long!", 400);
@@ -54,7 +56,7 @@ class RegisterValidationMiddleware implements MiddlewareInterface
 
         $userRegisterInputObj = new RegisterInput(
             name: $input["name"],
-            email: strtolower($input["email"]),
+            email: $input["email"],
             password: $input["password"],
             confirm_password: $input["confirm_password"],
             role: $input["role"],

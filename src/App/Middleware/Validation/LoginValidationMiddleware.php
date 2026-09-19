@@ -27,6 +27,8 @@ class LoginValidationMiddleware implements MiddlewareInterface
         if (!is_array($input) || empty($input)) {
             return $this->response($response, "Invalid or empty request payload!", 400);
         }
+
+        $input["email"] = isset($input["email"]) ? strtolower(trim($input["email"])) : "";
         
         if (!isset($input["email"]) || !filter_var($input["email"], FILTER_VALIDATE_EMAIL)) {
             return $this->response($response, "Invalid email address!", 400);
@@ -37,7 +39,7 @@ class LoginValidationMiddleware implements MiddlewareInterface
         }
 
         $loginInputObj = new LoginInput(
-            email: strtolower($input["email"]),
+            email: $input["email"],
             password: $input["password"]
         );
 
