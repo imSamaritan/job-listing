@@ -15,7 +15,7 @@ use App\Repositories\Users\UserRepository;
 use App\Repositories\Users\UserPasswordResetRepository;
 use App\Middleware\Auth\AuthMiddleware;
 use App\Controllers\Users\LoginController;
-use App\Controllers\Users\ResetPasswordController;
+use App\Controllers\Users\RequestResetPasswordController;
 use App\Utilities\AuthTokenUtils;
 use App\Utilities\ResetPasswordTokenUtils;
 use App\Services\MailService;
@@ -87,7 +87,7 @@ return [
         $cookie_name,
     ),
 
-    ResetPasswordController::class => DI\autowire()->constructorParameter(
+    RequestResetPasswordController::class => DI\autowire()->constructorParameter(
         "reset_password_url",
         $reset_url,
     ),
