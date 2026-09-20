@@ -19,102 +19,14 @@ class ResetPasswordController extends BaseController
         private ResetPasswordService $resetPasswordService,
         private MailService $mail,
         private ResetPasswordTokenUtils $resetTokenUtils,
-        private string $reset_password_url,
     ) {
         parent::__construct($php_renderer);
     }
-
+    
     public function index(Request $request, Response $response): Response
-    {
-        return $this->render($response, "Password/Index.phtml", [
-            "title" => "Reset password",
-        ]);
-    }
-
-    public function resetIndex(Request $request, Response $response): Response
     {
         return $this->render($response, "Password/Reset.phtml", [
             "title" => "Password reset",
         ]);
-    }
-
-    public function request(Request $request, Response $response): Response
-    {
-        $userEmail = $request->getAttribute("userEmail");
-        $failResponse = ["message" => "Please, check your email address!"];
-        $successResponse = [
-            "message" =>
-                "Email sent!, Please check your email's inbox for a reset password link. Thank You❤️🙏🏾.",
-        ];
-
-        if ($userEmail === null) {
-            $response->getBody()->write(json_encode($failResponse));
-            return $response;
-        }
-
-        // Get user id
-        $userId = $this->resetPasswordService->getUserIdByEmail($userEmail);
-
-        // If user is not registered, send a fake success !
-        if ($userId === null) {
-            $response->getBody()->write(json_encode($successResponse));
-            return $response;
-        }
-
-        // Generate token random_bytes(32);
-        $token = $this->resetTokenUtils->generateToken();
-
-        // Hash a token
-        $hashedToken = $this->resetTokenUtils->hashToken($token);
-
-        // If any records exists, clear them
-        $this->resetPasswordService->clearRecordByUserId($userId);
-
-        // Save currect reset password record [user_id, hashed_token]
-        $save = $this->resetPasswordService->saveResetRecord([
-            "user_id" => $userId,
-            "hashed_token" => $hashedToken,
-        ]);
-
-        if (!$save) {
-            $response->getBody()->write(json_encode($failResponse));
-            return $response;
-        }
-
-        //Reset password url
-        $token = rawurlencode($token);
-        $safeUrl = $this->reset_password_url . "?token=" . $token;
-        $resetUrl = htmlspecialchars($safeUrl, ENT_QUOTES, "UTF-8");
-
-        //Prepare html email message body
-        $body = "
-            <div>
-                <h2 style='color:red'>Password reset !</h2>
-                <div>
-                    <p>
-                        <strong>Hi, please click on the following reset password link below in order to reset your password account:</strong>
-                        <a href='{$resetUrl}' target='_blank'>{$resetUrl}</a>
-                    </p>
-                    <p>
-                        <h5>Thank You.</h5>
-                    </p>
-                </div>
-            </div>
-        ";
-
-        //Send email
-        $send = $this->mail->sendResetEmail(
-            to: $userEmail,
-            subject: "Password reset",
-            body: $body,
-        );
-
-        if (!$send) {
-            $response->getBody()->write(json_encode($failResponse));
-            return $response;
-        }
-
-        $response->getBody()->write(json_encode($successResponse));
-        return $response;
     }
 }

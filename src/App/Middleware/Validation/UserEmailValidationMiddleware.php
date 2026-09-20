@@ -13,14 +13,19 @@ class UserEmailValidationMiddleware implements MiddlewareInterface
 {
     public function process(Request $request, RequestHandler $handler): Response
     {
-        $userData = $request->getParsedBody();
+        $input = $request->getParsedBody();
         $email = null;
 
-        if (is_array($userData) && isset($userData["email"])) {
-            $email = filter_var($userData["email"], FILTER_VALIDATE_EMAIL) ? $userData["email"] : null;
+        if (!isset($input) || !is_array($input) || !isset($input["email"])) {
+            $email = null;
+        } else {
+            $email = strtolower(trim($input["email"]));
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $email = null;
+            }
         }
 
-        $request = $request->withAttribute("userEmail", $email);
+        $request = $request->withAttribute("email", $email);
         return $handler->handle($request);
     }
 }
